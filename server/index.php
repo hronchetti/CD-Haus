@@ -4,12 +4,15 @@ require_once('config/setEnv.php');
 require_once('classes/recordSet.class.php');
 require_once('classes/session.class.php');
 require_once('classes/pdoDB.class.php');
-/*
- *  ESSENTIAL COMPONENTS ------------------------------------------------------
- */
+
+/*  ---------------------------------------------
+ *  ESSENTIAL COMPONENTS
+ *  ------------------------------------------ */
+
 $action = isset($_REQUEST['action']) ? $_REQUEST['action'] : null;
 
 if (empty($action)) {
+    // Angular doesn't put post/put/delete method in the request stream so if the request method is post || put || delete
     if ((($_SERVER['REQUEST_METHOD'] == 'POST') ||
             ($_SERVER['REQUEST_METHOD'] == 'PUT') ||
             ($_SERVER['REQUEST_METHOD'] == 'DELETE')) &&
@@ -26,9 +29,11 @@ $db = pdoDB::getConnection();
 $session = Session::getSession();
 // Setting the header type to JSON because everything returned to this page will be in that format
 header("Content-Type: application/json");
-/*
- *  RE-USE VARIABLES ----------------------------------------------------------
- */
+
+/*  ---------------------------------------------
+ *  RE-USE VARIABLES
+ *  ------------------------------------------ */
+
 //
 $cd = isset($_REQUEST['cd']) ? $_REQUEST['cd'] : null;
 // If CD is clicked on my user then implement, if not set cd (album_id) to 1
@@ -38,10 +43,13 @@ if (!isset($cd)) {
 }
 //
 $userSession_id = $session->getProperty('user_id');
-$currentTime = ;
-/*
- *  ACTIONS -------------------------------------------------------------------
- */
+//
+$currentTime = date('Y-m-d H:i:s');
+
+/*  ---------------------------------------------
+ *  ACTIONS
+ *  -----------------------------------------  */
+
 switch ($action) {
 
     case 'loginUser':
@@ -154,20 +162,20 @@ switch ($action) {
 
     case 'newNote':
 
-        $newNoteText = '';
-
-        // generate current time
+        $newNoteText = isset($_REQUEST['newNoteText']) ? $_REQUEST['newNoteText'] : null;
 
         $newNoteSQL = "INSERT INTO i_notes (album_id, userID, note, lastupdate) 
                        VALUES (:album_id, :user_id, :note, :lastupdate)";
 
         $rs = new JSON_RecordSet();
         $retrieval = $rs->getRecordSet($newNoteSQL,
-            'ResultSet'
+            'ResultSet',
             array(':album_id' => $cd,
                   ':user_id' => $userSession_id,
                   ':note' => $newNoteText,
                   ':lastupdate' => $currentTime));
+
+        echo '{"status":"error", "message":{"text": "New note added"}}';
 
         break;
 

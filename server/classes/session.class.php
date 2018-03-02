@@ -5,6 +5,7 @@ class Session{
 
     private function __construct(){
         // Starting / resuming the session
+        // Define session save path here
         session_start();
     }
 
@@ -35,4 +36,5 @@ class Session{
         }
         return $returnValue;
     }
+    // Create another function to unset the session
 }
