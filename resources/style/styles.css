@@ -1,0 +1,400 @@
+/*
+
+CREATED BY: Harry Ronchetti
+FOR: CM0665 Northumbria University Assignment
+
+CSS NAMING CONVENTION: BEM (Block, Element, Modifier)
+DOCUMENTION: http://getbem.com/
+
+NOTE 1: See reset.css for foundations
+NOTE 2: See fonts.css for icons and fonts declarations
+
+---------------------------
+ANIMATIONS
+-------------------------*/
+@keyframes flyIn{
+    0%{
+        right: -100%;
+    }
+    100%{
+        right: 0;
+    }
+}
+/*-------------------------
+GLOBAL
+-------------------------*/
+body{
+    background: #F7F7F7;
+}
+/*-------------------------
+SIDEBAR
+-------------------------*/
+.sidebar{
+    background: #fff;
+    width: calc(100% / 5);
+    max-width: 290px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    padding: 70px 40px;
+    z-index: 1100;
+}
+.sidebar__logo{
+    width: 100%;
+    margin: 0 0 40px 0;
+}
+.sidebar__logo-disc{
+    display: inline-block;
+    vertical-align: middle;
+    width: calc(100% - 120px);
+    min-width: 40px;
+    margin: 0 15px 0 0;
+}
+.sidebar__logo-text{
+    display: inline-block;
+    vertical-align: middle;
+    font: 700 24px/36px 'Circular', sans-serif;
+    letter-spacing: 1px;
+    color: #4E4366;
+}
+/*-------------------------
+MAIN CONTENT & TOOLBARS
+-------------------------*/
+.main{
+    width: calc((100% / 5) * 4);
+    margin-left: calc(100% / 5);
+    z-index: 999;
+    background: #F7F7F7;
+}
+.toolbar{
+    background: #fff;
+    width: calc((100% / 5) * 4);
+    right: 0;
+    padding: 0 40px;
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: nowrap;
+    z-index: 998;
+    position: fixed;
+}
+.toolbar--top{
+    top: 0;
+}
+.toolbar--bottom{
+    bottom: 0;
+}
+.toolbar--focus{
+    z-index: 1001;
+}
+.toolbar--bottom .toolbar__column{
+    padding: 24px 0 22px 0;
+}
+.toolbar__column--single{
+    margin: 24px 0 22px 0;
+    cursor: pointer;
+}
+.toolbar__column{
+    height: 70px;
+}
+.toolbar__genre{
+    pointer-events: none;
+    position: fixed;
+    right: 60px;
+    top: 28px;
+}
+.toolbar--focus-icon{
+    color: #4E4366;
+    margin: 0 10px 0 0;
+}
+.main__content{
+    padding: 110px 40px 110px 40px;
+    width: 100%;
+}
+.pagination{
+    display: inline-block;
+}
+.pagination li{
+    display: inline-block;
+    width: 24px;
+    cursor: pointer;
+    border-radius: 100%;
+    text-align: center;
+    margin: 0 3px;
+}
+.pagination li:hover, .pagination__current{
+    background: #F1F0F2;
+    color: #4E4366;
+}
+/*-------------------------
+FOCUS (WHEN ALBUM CLICKED ON)
+-------------------------*/
+.main--focus{
+    position: absolute;
+    top: 0;
+    right: 0;
+    z-index: 1000;
+    min-height: 100vh;
+    animation: flyIn 0.5s forwards;
+}
+.focus__album{
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+}
+.focus__album-artwork{
+    width: 20%;
+    max-width: 200px;
+}
+.focus__album-artwork img{
+    width: 100%;
+}
+.focus__album-title{
+    width: 80%;
+    max-width: 520px;
+    padding: 0 0 0 40px;
+}
+.focus__album-title-text{
+    margin-bottom: 24px;
+}
+.focus__album-details{
+    width: 100%;
+    margin: 40px 0 0 0;
+}
+.focus__album-details p{
+    font-size: 16px;
+    line-height: 36px;
+    display: inline-block;
+    margin: 0 25px 0 0;
+}
+/*-------------------------
+TABLES
+-------------------------*/
+.data-table{
+    display: table;
+    background: #fff;
+    width: 100%;
+    border-radius: 10px;
+    margin: 40px 0 0 0;
+}
+.data-table--focus{
+    margin: 40px 0;
+}
+.data-table tr:last-child td:first-child{
+    border-bottom-left-radius: 10px; 
+}
+.data-table tr:last-child td:last-child{
+    border-bottom-right-radius: 10px; 
+}
+.data-table tr:nth-child(even){
+    background: #FAFAFA;
+}
+.data-table tr:hover{
+    background: #F1F0F5;
+    cursor: pointer;
+}
+.data-table--focus tr:hover{
+    background: #fff;
+    cursor: default;
+}
+.data-table--focus tr:nth-child(even):hover{
+    background: #FAFAFA;
+}
+.data-table td, .data-table th{
+    padding: 10px 0 12px 25px;
+}
+.data-table td:last-child{
+    padding-right: 25px;
+}
+.data-table__headings th{
+    font: 600 14px/24px 'Circular', sans-serif;
+    text-align: left;
+    letter-spacing: 0.5px;
+    color: #4E4366;
+    border-bottom: 1px solid #F7F7F7;
+}
+.data-table__headings tr:hover{
+    background: #fff;
+    cursor: default;
+}
+.data-table__headings tr:hover td:first-child{
+    border-top-left-radius: 10px;
+}
+.data-table__headings tr:hover td:last-child{
+    border-top-right-radius: 10px;
+}
+.data-table__quarter-width{
+    width: 25%;
+}
+/*-------------------------
+BUTTONS
+-------------------------*/
+.button{
+    border: 0;
+    border-radius: 21px;
+    background: #5DE3B6;
+    color: #fff;
+    font: 600 14px/42px 'Circular', sans-serif;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 0 30px;
+    margin: 30px 0;
+    cursor: pointer;
+    /* ANIMATION */
+    transition-property: transform;
+    transition-duration: 0.3s;
+    max-width: 100%;
+    display: block;
+}
+.button:hover, .button:focus, .button:active{
+    transform: scale(1.05);
+}
+/*-------------------------
+FORMS
+-------------------------*/
+input:focus, select:focus, textarea:focus{
+    outline: none;
+}
+.form__label{
+    display: block;
+    margin: 15px 0 10px 0;
+}
+.form__text-input{
+    background: #fff;
+    border: 1px solid #EDEBF2;
+    font: 400 14px/40px 'Circular', sans-serif;
+    color: #4E4366;
+    height: 40px;
+    width: 100%;
+    border-radius: 20px;
+    padding: 0 20px;
+    box-sizing: border-box;
+}
+.form__text-input::placeholder, .form__search::placeholder{
+    color: #DCDBDE;
+}
+.form__search{
+    height: 70px;
+    line-height: 70px;
+    border: 0;
+    padding: 0 15px;
+    display: inline-block;
+    font: 400 14px/40px 'Circular', sans-serif;
+    letter-spacing: 0.5px;
+    color: #4E4366;
+    min-width: 350px;
+}
+.form__search::-webkit-search-cancel-button{
+    -webkit-appearance: none;
+}
+.form__select{
+    background: #fff;
+    border: 1px solid #EDEBF2;
+    font: 400 14px/40px 'Circular', sans-serif;
+    letter-spacing: 0.5px;
+    color: #4E4366;
+    height: 40px;
+    min-width: 250px;
+    margin: 15px 0;
+    border-radius: 20px;
+    padding: 0 20px;
+}
+.form__select option:disabled{
+    color: #DCDBDE;
+}
+/*-------------------------
+NOTES
+-------------------------*/
+.notes{
+    background: #FAFAFA;
+    border: 1px solid #F1F0F2;
+    padding: 25px 25px 0 25px;
+    border-radius: 10px;
+    width: 100%;
+    max-width: 630px;
+    margin-bottom: 25px;
+}
+.notes__display{
+    width: 100%;
+    padding: 0 0 25px 0;
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    position: relative;
+}
+.notes__title{
+    color: #76747A;
+    margin-bottom: 25px;
+}
+.notes__text-input{
+    max-width: 630px;
+    resize: none;
+    line-height: 24px;
+    padding: 12px 20px;
+    height: 76px;
+    overflow-y: hidden;
+}
+.notes__button{
+    margin: 25px 0 0 0;
+}
+.notes__edit{
+    font: 400 14px/24px 'Circular', sans-serif;
+    width: calc(100% - 67px);
+    resize: none;
+    padding: 0;
+    background: #FAFAFA;
+    color: #76747A;
+    border-radius: 10px;
+    border: 1px solid #EDEBF2;
+    background: #fff;
+    display: block;
+}
+.notes__edit:disabled{
+    border: none;
+    background: #FAFAFA;
+    color: #76747A;
+}
+.notes__display:not(:first-child){
+    padding-top: 25px;
+    border-top: 1px dashed #DCDBDE;
+}
+.notes__icon{
+    padding: 8px 0 0 16px;
+    font-size: 18px;
+    cursor: pointer;
+    text-align: right;
+}
+.notes__icon:hover, .notes__icon:active{
+    color: #4E4366;
+}
+#notes__button-update{
+    margin-bottom: 0;
+}
+/*-------------------------
+REUSABLE CLASSES
+-------------------------*/
+.shadow{
+    box-shadow: 0 1px 3px 0 rgba(93, 87, 107, 0.08);
+}
+.highlight{
+    color: #4E4366;
+    font-weight: 600;
+}
+.highlight--thin{
+    color: #4E4366;
+}
+.hidden{
+    display: none;
+}
+/*--------------------------------------------------
+RESPONSIVITY
+--------------------------------------------------*/
+@media all and (min-width: 1450px){
+    .main{
+        width: calc(100% - 290px);
+        margin-left: 290px;
+    }
+    .toolbar--top, .toolbar--bottom{
+        width: calc(100% - 290px);
+    }
+}
