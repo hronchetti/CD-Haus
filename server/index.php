@@ -106,7 +106,8 @@ switch ($action) {
         if((!empty($genre)) && (!empty($criteria))){
             // Filter based on user input of genre AND search text
             $filters = "i_album.genre_id = $genre
-                        AND i_album.name LIKE '%$criteria%'";
+                        AND (Album LIKE '%$criteria%'
+                        OR i_artist.name LIKE '%$criteria%'";
 
         } else if ((!empty($genre)) && (empty($criteria))){
             // Filter just by genre
@@ -114,7 +115,8 @@ switch ($action) {
 
         } else if ((empty($genre)) && (!empty($criteria))){
             // Filter just by search text
-            $filters = "i_album.name LIKE '%$criteria%'";
+            $filters = "Album LIKE '%$criteria%'
+                        OR i_artist.name LIKE '%$criteria%'";
         } else{
             // Show all results
             $filters = 1;
@@ -124,12 +126,25 @@ switch ($action) {
             // Nothing set by user, order by album name (ascending)
             $ordering = 'i_album.name ASC';
         }
-        // SQL query that gets all field names from genre, album, album track, track and artist tables that match given criteria
-        $searchSLQ = "SELECT i_album.artwork, i_album.album_id, i_album.name AS Album, GROUP_CONCAT(DISTINCT i_artist.name) AS Artists, i_album.year, SUM(i_track.total_time) AS Duration
-                      FROM i_album 
-                          INNER JOIN i_album_track ON (i_album.album_id = i_album_track.album_id)
-                          INNER JOIN i_track ON (i_album_track.track_id = i_track.track_id)
-                          INNER JOIN i_artist ON (i_track.artist_id = i_artist.artist_id)
+        /*
+         * ROB I'm not going to lie figuring the SQL below out and getting albums without a genre to show
+         * without using RIGHT joins (because SQLite doesn't support them) was extremely hard...
+         * Not sure if my approach was the best but as far as I'm aware I have all necessary rows showing and search functionality implemented
+         * */
+        $searchSLQ = "SELECT i_album.artwork AS Artwork, i_album.album_id AS Album_ID, i_album.name AS Album, GROUP_CONCAT(DISTINCT i_artist.name) AS Artists, i_album.genre_id AS Genre, i_album.year AS Year, SUM(i_track.total_time) AS Duration
+                      FROM i_album
+                          LEFT JOIN i_album_track ON (i_album.album_id = i_album_track.album_id)
+                          LEFT JOIN i_track ON (i_album_track.track_id = i_track.track_id)
+                          LEFT JOIN i_artist ON (i_track.artist_id = i_artist.artist_id)
+                      WHERE $filters AND genre_id IS NULL
+                      GROUP BY i_album.album_id
+                      UNION ALL
+                      SELECT i_album.artwork AS Artwork, i_album.album_id AS Album_ID, i_album.name AS Album, GROUP_CONCAT(DISTINCT i_artist.name) AS Artists, i_genre.name AS Genre, i_album.year AS Year, SUM(i_track.total_time) AS Duration
+                      FROM i_genre
+                          INNER JOIN i_album ON (i_genre.genre_id = i_album.genre_id) 
+                          LEFT JOIN i_album_track ON (i_album.album_id = i_album_track.album_id)
+                          LEFT JOIN i_track ON (i_album_track.track_id = i_track.track_id)
+                          LEFT JOIN i_artist ON (i_track.artist_id = i_artist.artist_id)
                       WHERE $filters
                       GROUP BY i_album.album_id
                       ORDER BY $ordering";
