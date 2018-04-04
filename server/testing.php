@@ -1,77 +1,239 @@
 <?php
 
-require_once('config/setEnv.php');
-require_once('classes/recordSet.class.php');
-require_once('classes/pdoDB.class.php');
 require_once('classes/session.class.php');
+require_once('config/setEnv.php');
+require_once('classes/webpage.class.php');
+require_once('classes/pdoDB.class.php');
+require_once('classes/getAlbums.class.php');
 
-$action = isset($_REQUEST['action']) ? $_REQUEST['action'] : null;
-$genre = isset($_REQUEST['genre']) ? $_REQUEST['genre'] : null;
-$term = isset($_REQUEST['term']) ? $_REQUEST['term'] : null;
-$showTracks = isset($_REQUEST['showTracks']) ? $_REQUEST['showTracks'] : null;
+$session = Session::getSession();
+/* Creating a new instance of the webpage class and passing in a title and stylesheet
+   (not making use of array but testing page doesn't need many styles right!?) */
 
-if (empty($action)) {
-    if ((($_SERVER['REQUEST_METHOD'] == 'POST') ||
-         ($_SERVER['REQUEST_METHOD'] == 'PUT') ||
-         ($_SERVER['REQUEST_METHOD'] == 'DELETE')) &&
-         (strpos($_SERVER['CONTENT_TYPE'], 'application/json') !== false)) {
+$page = new Webpage( "CD Haus | Testing page", array( "../resources/style/testing.css" ) );
+$albumList = new getAlbums();
 
-        $input = json_decode(file_get_contents('php://input'), true);
+$URLBase = 'index.php?action=';
 
-        $action = isset($input['action']) ? $input['action'] : null;
-        $subject = isset($input['subject']) ? $input['subject'] : null;
-        $data = isset($input['data']) ? $input['data'] : null;
-    }
+// Add new text to page body
+$page->addToBody( "\t<h1>CD Haus Testing Page</h1>" );
+
+/*  ---------------------------------------------
+ *  USER FORMS
+ *  ------------------------------------------ */
+
+$loggedInStatus = $session->getProperty('loggedIn');
+$sessionUserID = $session->getProperty('user_id');
+
+/* If user is logged in change the form button to sign out, form action to logout and show user_id
+   (will save time when trying to figure out if signed in for note functionality) */
+if ($loggedInStatus === true){
+    $userID = $sessionUserID;
+    $userFormAction = 'logoutUser';
+    $userFormButton = '<input type="submit" value="SIGN OUT">';
+} else{
+    $userID = '';
+    $userFormAction = 'loginUser';
+    $userFormButton = '<input type="submit" value="SIGN IN">';
 }
 
-// Connecting to the database
-$db = pdoDB::getConnection();
-// Connecting to session
-$session = Session::getInstance();
-//
-switch ($action) {
-    case 'loginUser':
-        // Getting user id and password from the form input values
-        $user_id = isset($_REQUEST['user_id']) ? $_REQUEST['user_id'] : null;
-        $password = isset($_REQUEST['password']) ? $_REQUEST['password'] : null;
-        // Preparing a statement for selecting a users password from DB
-        $stmt = $db->prepare("SELECT password FROM i_user WHERE user_id = :user_id");
-        // Executing the prepared statement and storing the result as an object in an array
-        $stmt->execute(array(':user_id' => $user_id));
-        // Fetching the object whilst looping through the array of results returned by the statement above
-        while($hash = $stmt->fetchObject()){
-            // Verifying the given $password is the un-hashed version of the password row in the database
-            if (password_verify($password, $hash->password)) {
-                // Correct password, user logged in
-                $session->setProperty('loggedIn', true);
-                $session->setProperty('user_id', $user_id);
-                $session->setProperty('password', $password);
+$loginUser = <<<FORM
 
-                echo ('Correct password');
-
-            } else{
-                // Incorrect password, user not logged in. Error message sent back
-                $errorMessage = 'Incorrect password';
-                echo ($errorMessage);
-            }
-        }
-
-        break;
-
-    default:
-        break;
-}
-?>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <title>PHP Testing Page</title>
-</head>
-<body>
-    <form method="post" action="login.php">
-        <input type="text" name="user_id">
-        <input type="password" name="password">
-        <input type="submit" value="Log in">
+    <form action="{$URLBase}$userFormAction" method="post">
+        <fieldset>
+            <legend>Login/Logout User</legend>
+            <label>
+                User ID: 
+                <input type="text" name="userID" value="$userID">
+            </label>
+            <label>
+                Password: 
+                <input type="password" name="password">
+            </label>
+            $userFormButton
+        </fieldset>
     </form>
-</body>
-</html>
+FORM;
+
+/*  ---------------------------------------------
+ *  SEARCH FORM
+ *  ------------------------------------------ */
+
+// Storing returned data in another variable because functions cannot be executed in a heredoc (for some reason)
+$genres = $albumList->getAllGenres();
+
+$searchAlbums = <<<FORM
+
+    <form action="{$URLBase}search" method="post">
+        <fieldset>
+            <legend>Search Albums</legend>
+            <label>
+                Search criteria:
+                <input type="search" name="criteria">
+            </label>
+            <label>
+                Genre:
+                <select name="genre">
+                    <option selected value="0">All Genres</option>
+                    <!-- ALL GENRES -->
+                    $genres
+                    <!-- END ALL GENRES -->
+                </select>   
+            </label>
+            <label>
+                Ordering: 
+                <select name="ordering">
+                    <option selected value="Album ASC">Album (A - Z)</option>
+                    <option value="Album DESC">Album (Z - A)</option>
+                    <option value="i_artist.name ASC">Artist (A - Z)</option>
+                    <option value="i_artist.name DESC">Artist (Z - A)</option>
+                    <option value="i_genre.name ASC">Genre (A - Z)</option>
+                    <option value="i_genre.name DESC">Genre (Z - A)</option>
+                    <option value="i_album.year DESC">Year (Newest)</option>
+                    <option value="i_album.year ASC">Year (Oldest)</option>
+                    <option value="Duration DESC">Duration (Longest)</option>
+                    <option value="Duration ASC">Duration (Shortest)</option>
+                </select>
+            </label>
+            <input type="submit" value="SEARCH">
+        </fieldset>
+    </form>
+FORM;
+
+/*  ---------------------------------------------
+ *  SHOW TRACKS FORM
+ *  ------------------------------------------ */
+
+// Storing returned data in another variable because functions cannot be executed in a heredoc (for some reason)
+$albums = $albumList->getAllAlbums();
+
+$showAlbumTracks = <<<FORM
+
+    <form action="{$URLBase}showTracks" method="post">
+        <fieldset>
+            <legend>Show Tracks</legend>
+            <label>
+                For Album: 
+                <select name="album">
+                    <!-- ALL ALBUMS -->
+                    $albums
+                    <!-- END ALL ALBUMS -->
+                </select>
+            </label>
+            <input type="submit" value="SHOW TRACKS">
+        </fieldset>
+    </form>
+FORM;
+
+/*  ---------------------------------------------
+ *  SHOW NOTE FORM
+ *  ------------------------------------------ */
+
+
+// Storing returned data in another variable because functions cannot be executed in a heredoc (for some reason)
+$albumsWithANote = $albumList->getAlbumsWithANote();
+
+$showNote = <<<FORM
+
+    <form action="{$URLBase}showNote" method="post">
+        <fieldset>
+            <legend>Show Note</legend>
+            <label>
+                On Album: 
+                <select name="album">
+                    <!-- ALBUMS WITH A NOTE -->
+                    $albumsWithANote
+                    <!-- END ALBUMS WITH A NOTE -->
+                </select>
+            </label>
+            <input type="hidden" name="userID" value="$sessionUserID">
+            <input type="submit" value="SHOW NOTE">
+        </fieldset>
+    </form>
+FORM;
+
+/*  ---------------------------------------------
+ *  NEW NOTE FORM
+ *  ------------------------------------------ */
+
+// Storing returned data in another variable because functions cannot be executed in a heredoc (for some reason)
+$albumsWithNoNote = $albumList->getAlbumsWithNoNote();
+
+$newNote = <<<FORM
+    
+    <form action="{$URLBase}newNote" method="get">
+        <fieldset>
+            <legend>New Note</legend>
+            <label>
+                On Album: 
+                <select name="album">
+                    <!-- ALBUMS WITH NO NOTE -->
+                    $albumsWithNoNote
+                    <!-- END ALBUMS WITH NO NOTE -->
+                </select>
+            </label>
+            <label>
+                Note: 
+                <textarea name="note" rows="2"></textarea>
+            </label>
+            <input type="hidden" name="userID" value="$sessionUserID">
+            <input type="submit" value="ADD NOTE">
+        </fieldset>
+    </form>
+FORM;
+
+/*  ---------------------------------------------
+ *  UPDATE & DELETE NOTE FORMS
+ *  ------------------------------------------ */
+$updateNote = <<<FORM
+    
+    <form action="{$URLBase}updateNote" method="post">
+        <fieldset>
+            <legend>Edit Note</legend>
+            <label>
+                On Album: 
+                <select name="album">
+                    <!-- ALBUMS WITH A NOTE -->
+                    $albumsWithANote
+                    <!-- END ALBUMS WITH A NOTE -->
+                </select>
+            </label>
+            <label>
+                New Text: 
+                <textarea name="note" rows="2"></textarea>
+            </label>
+            <input type="hidden" name="userID" value="$sessionUserID">
+            <input type="submit" value="UPDATE NOTE">
+        </fieldset>
+    </form>
+FORM;
+//
+$deleteNote = <<<FORM
+    
+    <form action="{$URLBase}deleteNote" method="post">
+        <fieldset>
+            <legend>Delete Note</legend>
+            <label>
+                On Album: 
+                <select name="album">
+                    <!-- ALBUMS WITH A NOTE -->
+                    $albumsWithANote
+                    <!-- END ALBUMS WITH A NOTE -->
+                </select>
+            </label>
+            <input type="hidden" name="userID" value="$sessionUserID">
+            <input type="submit" value="DELETE NOTE">
+        </fieldset>
+    </form>
+FORM;
+
+// Forms added to page in order listed above
+$page->addToBody($loginUser);
+$page->addToBody($searchAlbums);
+$page->addToBody($showAlbumTracks);
+$page->addToBody($showNote);
+$page->addToBody($newNote);
+$page->addToBody($updateNote);
+$page->addToBody($deleteNote);
+// Echo whole page back to the browser
+echo $page->getPage();

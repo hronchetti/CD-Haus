@@ -1,0 +1,28 @@
+/*
+
+CREATED BY: Harry Ronchetti
+FOR: CM0665 Northumbria University Assignment
+
+CSS NAMING CONVENTION: BEM (Block, Element, Modifier)
+DOCUMENTION: http://getbem.com/
+
+--------------------------------
+BASIC STYLES FOR TESTING PAGE
+------------------------------*/
+
+body{
+    margin: 25px;
+}
+form{
+    margin: 0 0 25px 0;
+}
+fieldset{
+    padding: 15px;
+}
+label{
+    display: block;
+    padding: 0 0 15px 0;
+}
+textarea{
+    resize: none;
+}

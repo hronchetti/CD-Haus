@@ -1,130 +1,142 @@
 <?php
 
+require_once('classes/session.class.php');
 require_once('config/setEnv.php');
 require_once('classes/recordSet.class.php');
-require_once('classes/session.class.php');
 require_once('classes/pdoDB.class.php');
+
+// Connecting to the database & current session
+$db = pdoDB::getConnection();
+$session = Session::getSession();
+
+// Setting the header type to JSON because everything returned to this page will be in that format
+header("Content-Type: application/json");
 
 /*  ---------------------------------------------
  *  ESSENTIAL COMPONENTS
  *  ------------------------------------------ */
 
 $action = isset($_REQUEST['action']) ? $_REQUEST['action'] : null;
+$album = isset($_REQUEST['album']) ? $_REQUEST['album'] : null;
+$userID = isset($_REQUEST['userID']) ? $_REQUEST['userID'] : null;
+$note = isset($_REQUEST['note']) ? $_REQUEST['note'] : null;
+$password = isset($_REQUEST['password']) ? $_REQUEST['password'] : null;
+// Search Variables
+$criteria = isset($_REQUEST['criteria']) ? $_REQUEST['criteria'] : null;
+$genre = isset($_REQUEST['genre']) ? $_REQUEST['genre'] : null;
+$ordering = isset($_REQUEST['ordering']) ? $_REQUEST['ordering'] : null;
 
-if (empty($action)) {
-    // Angular doesn't put post/put/delete method in the request stream so if the request method is post || put || delete
+if (!isset($action)) {
+    // Angular doesn't put post/put/delete method in the request stream so if the request method is post || put || delete then get
     if ((($_SERVER['REQUEST_METHOD'] == 'POST') ||
             ($_SERVER['REQUEST_METHOD'] == 'PUT') ||
             ($_SERVER['REQUEST_METHOD'] == 'DELETE')) &&
         (strpos($_SERVER['CONTENT_TYPE'], 'application/json') !== false)) {
-
+        //
         $input = json_decode(file_get_contents('php://input'), true);
-
+        // Putting the
         $action = isset($input['action']) ? $input['action'] : null;
+        $album = isset($input['album']) ? $input['album'] : null;
+        $userID = isset($input['userID']) ? $input['userID'] : null;
+        $note = isset($input['note']) ? $input['note'] : null;
+        $password = isset($input['password']) ? $input['password'] : null;
+        $criteria = isset($input['criteria']) ? $input['criteria'] : null;
+        $genre = isset($input['genre']) ? $input['genre'] : null;
+        $ordering = isset($input['ordering']) ? $input['ordering'] : null;
+        // Returned from angular (POST)
+        // $data = isset($input['data']) ? $input['data'] : null;
     }
 }
-// Connecting to the database
-$db = pdoDB::getConnection();
-// Connecting to session
-$session = Session::getSession();
-// Setting the header type to JSON because everything returned to this page will be in that format
-header("Content-Type: application/json");
 
 /*  ---------------------------------------------
- *  RE-USE VARIABLES
+ *  VARIABLE CONTROL
  *  ------------------------------------------ */
 
-//
-$cd = isset($_REQUEST['cd']) ? $_REQUEST['cd'] : null;
-// If CD is clicked on my user then implement, if not set cd (album_id) to 1
-if (!isset($cd)) {
-    // No album_id set by user, show tracks for album_id=1
-    $cd = 1;
-}
-//
-$userSession_id = $session->getProperty('user_id');
-//
-$currentTime = date('Y-m-d H:i:s');
+$loggedInStatus = $session->getProperty('loggedIn');
+$sessionUserID = $session->getProperty('user_id');
+// Implement some checking for session ID matching ID that comes with data
 
 /*  ---------------------------------------------
  *  ACTIONS
  *  -----------------------------------------  */
 
 switch ($action) {
-
     case 'loginUser':
-        // Getting user id and password from the form input values
-        $user_id = isset($_REQUEST['user_id']) ? $_REQUEST['user_id'] : null;
-        $password = isset($_REQUEST['password']) ? $_REQUEST['password'] : null;
-        // If user id AND password are both not empty then
-        if (!empty($user_id) && !empty($password)) {
+        // password and userID retrieved at top of page in 'ESSENTIAL COMPONENTS'
+        if (!empty($userID) && !empty($password)) {
             // Preparing a statement for selecting a users password from DB
-            $stmt = $db->prepare("SELECT user_id, password, username
+            $stmt = $db->prepare("SELECT user_id, password
                                   FROM i_user 
                                   WHERE user_id = :user_id");
             // Executing the prepared statement and storing the result as an object in an array
-            $stmt->execute(array(':user_id' => $user_id));
+            $stmt->execute(array(':user_id' => $userID));
             // Fetching the object whilst looping through the array of results returned by the statement above
             while ($hash = $stmt->fetchObject()) {
                 // Verifying the given $password is the un-hashed version of the password row in the database
                 if (password_verify($password, $hash->password)) {
                     // Correct password, user logged in
                     $session->setProperty('loggedIn', true);
-                    $session->setProperty('user_id', $user_id);
-                    $session->setProperty('password', $password);
+                    $session->setProperty('user_id', $userID);
 
-                    echo('Signed in');
+                    echo '{"status":"ok", "message":{"text": "Sign in successful"}}';
 
                 } else {
                     // Incorrect password, user not logged in. Error message sent back
-                    $errorMessage = 'Incorrect password or username';
-                    echo($errorMessage);
+                    echo '{"status":"error", "message":{"text": "Password incorrect"}}';
                 }
             }
         } else {
-            echo '{"status":{"error":"error", "text":"Username and Password are required."}}';
+            echo '{"status":"error", "message":{"text": "Username and password required"}}';
         }
 
         break;
 
     case 'logoutUser':
 
-        // Clear session data
+        $session->clearSession();
+
+        echo '{"status":"ok","message":{"text":"Sign out successful"}}';
 
         break;
 
     case 'search':
         //
-        $criteria = isset($_REQUEST['criteria']) ? $_REQUEST['criteria'] : null;
-        $ordering = isset($_REQUEST['ordering']) ? $_REQUEST['ordering'] : null;
+
         // If search entries or genre filters are set by the user then implement, if not show all albums
-        if (!isset($criteria)) {
-            // Nothing set by user, show all CDs
-            $criteria = 1;
+        if((!empty($genre)) && (!empty($criteria))){
+            // Filter based on user input of genre AND search text
+            $filters = "i_album.genre_id = $genre
+                        AND i_album.name LIKE '%$criteria%'";
+
+        } else if ((!empty($genre)) && (empty($criteria))){
+            // Filter just by genre
+            $filters = "i_album.genre_id = $genre";
+
+        } else if ((empty($genre)) && (!empty($criteria))){
+            // Filter just by search text
+            $filters = "i_album.name LIKE '%$criteria%'";
+        } else{
+            // Show all results
+            $filters = 1;
         }
         // If ordering filters are set by the user then implement, if not order by album name
-        if (!isset($ordering)) {
+        if (empty($ordering)) {
             // Nothing set by user, order by album name (ascending)
             $ordering = 'i_album.name ASC';
         }
         // SQL query that gets all field names from genre, album, album track, track and artist tables that match given criteria
-        $searchSLQ = "SELECT *
-                      FROM i_genre 
-                          INNER JOIN i_album ON (i_genre.genre_id = i_album.genre_id)
+        $searchSLQ = "SELECT i_album.artwork, i_album.album_id, i_album.name AS Album, GROUP_CONCAT(DISTINCT i_artist.name) AS Artists, i_album.year, SUM(i_track.total_time) AS Duration
+                      FROM i_album 
                           INNER JOIN i_album_track ON (i_album.album_id = i_album_track.album_id)
                           INNER JOIN i_track ON (i_album_track.track_id = i_track.track_id)
                           INNER JOIN i_artist ON (i_track.artist_id = i_artist.artist_id)
-                      WHERE i_album.name LIKE '%$criteria%'
-                          OR i_album.composer LIKE '%$criteria%'
-                          OR i_album.year LIKE '%$criteria%'
-                          OR i_artist.name LIKE '%$criteria%'
-                          OR i_genre.name LIKE '%$criteria%'
-                          OR i_track.name LIKE '%$criteria%'
+                      WHERE $filters
+                      GROUP BY i_album.album_id
                       ORDER BY $ordering";
         // Creating a new instance of the JSON_RecordSet class
         $rs = new JSON_RecordSet();
         //
-        $retrieval = $rs->getRecordSet($searchSLQ);
+        $retrieval = $rs->getRecordSet($searchSLQ, 'Albums');
         // Printing the results on the page
         echo $retrieval;
 
@@ -132,66 +144,117 @@ switch ($action) {
 
     case 'showTracks':
 
-        // SQL to retrieve all information about tracks related to a given album (from the artist, track, album track and album tables)
-        $showTracksSQL = "SELECT *
+        if(!empty($album)) {
+            // SQL to retrieve all information about tracks related to a given album (from the artist, track, album track and album tables)
+            $showTracksSQL = "SELECT i_album_track.track_number, i_track.name AS Track, i_artist.name AS Artist, i_track.total_time AS Duration, i_track.size
                           FROM i_artist
                              INNER JOIN i_track ON (i_artist.artist_id = i_track.artist_id)
                              INNER JOIN i_album_track ON (i_track.track_id = i_album_track.track_id)
                              INNER JOIN i_album ON (i_album_track.album_id = i_album.album_id)
-                          WHERE i_album_track.album_id = $cd
+                             INNER JOIN i_genre ON (i_album.genre_id = i_genre.genre_id)
+                          WHERE i_album_track.album_id = $album
                           ORDER BY i_album_track.track_number";
 
-        $rs = new JSON_RecordSet();
-        $retrieval = $rs->getRecordSet($showTracksSQL);
-        echo $retrieval;
+            $rs = new JSON_RecordSet();
+            $retrieval = $rs->getRecordSet($showTracksSQL, 'Album');
+            echo $retrieval;
 
+        } else{
+            echo '{"status":"error", "message":{"text": "No album chosen"}}';
+        }
         break;
 
-    case 'showNotes':
+    case 'showNote':
+        // userID retrieved at top of page in 'ESSENTIAL COMPONENTS'
+        if((!empty($userID)) && (!empty($album))){
 
-        $showNotesSQL = "SELECT *
-                         FROM i_notes
-                         WHERE i_notes.album_id = $cd
-                         ORDER BY lastupdate";
+            $showNoteSQL = "SELECT *
+                            FROM i_notes
+                            WHERE i_notes.album_id = $album AND i_notes.userID = '$userID'";
 
-        $rs = new JSON_RecordSet();
-        $retrieval = $rs->getRecordSet($showNotesSQL);
-        echo $retrieval;
+            $rs = new JSON_RecordSet();
+            $retrieval = $rs->getRecordSet($showNoteSQL, 'Note');
+            echo $retrieval;
+
+        } else{
+            echo '{"status":"error", "message":{"text": "Sign in to show notes"}}';
+        }
 
         break;
 
     case 'newNote':
+        // note, album and userID retrieved at top of page in 'ESSENTIAL COMPONENTS'
+        if (((!empty($note)) && (!empty($userID))) && (!empty($album))){
 
-        $newNoteText = isset($_REQUEST['newNoteText']) ? $_REQUEST['newNoteText'] : null;
+            $newNoteSQL = "INSERT INTO i_notes (album_id, userID, note) 
+                           VALUES (:album_id, :user_id, :note)";
 
-        $newNoteSQL = "INSERT INTO i_notes (album_id, userID, note, lastupdate) 
-                       VALUES (:album_id, :user_id, :note, :lastupdate)";
+            $rs = new JSON_RecordSet();
+            $retrieval = $rs->getRecordSet($newNoteSQL,
+                'ResultSet',
+                array(':album_id' => $album,
+                    ':user_id' => $userID,
+                    ':note' => $note));
 
-        $rs = new JSON_RecordSet();
-        $retrieval = $rs->getRecordSet($newNoteSQL,
-            'ResultSet',
-            array(':album_id' => $cd,
-                  ':user_id' => $userSession_id,
-                  ':note' => $newNoteText,
-                  ':lastupdate' => $currentTime));
+            if($retrieval === true){
+                echo '{"status":"ok", "message":{"text": "New note added"}}';
+            } else{
+                echo '{"status":"error", "message":{"text": "New note not added, note already exists"}}';
+            }
 
-        echo '{"status":"error", "message":{"text": "New note added"}}';
+
+        } else {
+            echo '{"status":"error", "message":{"text": "New note not added... note text, album and signed in user required"}}';
+        }
 
         break;
 
     case 'updateNote':
 
-        $updateNoteSQL = "";
+        // note, album and userID retrieved at top of page in 'ESSENTIAL COMPONENTS'
+        if (((!empty($note)) && (!empty($userID))) && (!empty($album))){
+
+            $updateNoteSQL = "UPDATE i_notes
+                              SET note=:note
+                              WHERE i_notes.album_id=:album_id AND i_notes.userID=:userID";
+
+            $rs = new JSON_RecordSet();
+            $retrieval = $rs->getRecordSet($updateNoteSQL,
+                'ResultSet',
+                array(':note' => $note,
+                    ':album_id' => $album,
+                    ':userID' => $userID));
+
+            echo '{"status":"ok", "message":{"text": "Note updated"}}';
+
+        } else {
+            echo '{"status":"error", "message":{"text": "Note not updated... note text, album and signed in user required"}}';
+        }
 
         break;
 
     case 'deleteNote':
 
-        $deleteNoteSQL = "";
+        if ((!empty($album)) && (!empty($userID))){
+            // SQL to delete record from database entirely
+            $deleteNoteSQL = "DELETE FROM i_notes
+                              WHERE i_notes.album_id=:album_id AND i_notes.userID=:userID";
+            //
+            $rs = new JSON_RecordSet();
+            $retrieval = $rs->getRecordSet($deleteNoteSQL,
+                'ResultSet',
+                array(':album_id' => $album,
+                    ':userID' => $userID));
+
+            echo '{"status":"ok", "message":{"text": "Note deleted"}}';
+
+        } else {
+            echo '{"status":"error", "message":{"text": "Note not deleted, album and signed in user required"}}';
+        }
 
         break;
 
     default:
-        echo '{"status":"error", "message":{"text": "default no action taken"}}';
+        echo '{"status":"error", "message":{"text": "(default) no action taken"}}';
         break;
 }

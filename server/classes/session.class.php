@@ -1,15 +1,19 @@
 <?php
 
-class Session{
+class Session
+{
     private static $instance;
 
-    private function __construct(){
+    private function __construct()
+    {
         // Starting / resuming the session
-        // Define session save path here
+        ini_set("session.save_path", "/Applications/MAMP/htdocs/sessionData");
+        // Resuming current session
         session_start();
     }
 
-    public static function getSession() {
+    public static function getSession()
+    {
         // If session doesn't exist start new session
         if (!isset(self::$instance)) {
             self::$instance = new Session();
@@ -17,16 +21,18 @@ class Session{
         return self::$instance;
     }
 
-    public function setProperty( $key, $val ) {
-        /* don't need to check that session exists
+    public function setProperty($key, $val)
+    {
+        /* Don't need to check that session exists
            since if we're here we must have instantiated
            $instance and started the session */
 
         // Set provided $_SESSION variable ($key) to the given value ($val)
-        $_SESSION[ $key ] = $val;
+        $_SESSION[$key] = $val;
     }
 
-    public function getProperty( $key ) {
+    public function getProperty($key)
+    {
         // Creating an empty variable
         $returnValue = "";
 
@@ -36,5 +42,12 @@ class Session{
         }
         return $returnValue;
     }
-    // Create another function to unset the session
+
+    public function clearSession()
+    {
+        // Emptying current session
+        session_unset();
+        // Destroying current session
+        session_destroy();
+    }
 }
