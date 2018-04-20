@@ -26,7 +26,7 @@ $criteria = isset($_REQUEST['criteria']) ? $_REQUEST['criteria'] : null;
 $genre = isset($_REQUEST['genre']) ? $_REQUEST['genre'] : null;
 $ordering = isset($_REQUEST['ordering']) ? $_REQUEST['ordering'] : null;
 
-if (!isset($action)) {
+if (empty($action)) {
     // Angular doesn't put post/put/delete method in the request stream so if the request method is post || put || delete then get
     if ((($_SERVER['REQUEST_METHOD'] == 'POST') ||
             ($_SERVER['REQUEST_METHOD'] == 'PUT') ||
@@ -44,7 +44,7 @@ if (!isset($action)) {
         $genre = isset($input['genre']) ? $input['genre'] : null;
         $ordering = isset($input['ordering']) ? $input['ordering'] : null;
         // Returned from angular (POST)
-        // $data = isset($input['data']) ? $input['data'] : null;
+        $data = isset($input['data']) ? $input['data'] : null;
     }
 }
 
@@ -100,7 +100,6 @@ switch ($action) {
         break;
 
     case 'search':
-        //
 
         // If search entries or genre filters are set by the user then implement, if not show all albums
         if((!empty($genre)) && (!empty($criteria))){
@@ -126,12 +125,8 @@ switch ($action) {
             // Nothing set by user, order by album name (ascending)
             $ordering = 'i_album.name ASC';
         }
-        /*
-         * ROB I'm not going to lie figuring the SQL below out and getting albums without a genre to show
-         * without using RIGHT joins (because SQLite doesn't support them) was extremely hard...
-         * Not sure if my approach was the best but as far as I'm aware I have all necessary rows showing and search functionality implemented
-         * */
-        $searchSLQ = "SELECT i_album.artwork AS Artwork, i_album.album_id AS Album_ID, i_album.name AS Album, GROUP_CONCAT(DISTINCT i_artist.name) AS Artists, i_album.genre_id AS Genre, i_album.year AS Year, SUM(i_track.total_time) AS Duration
+        // Feel like there must have been an easier way but I couldn't find it!
+        $searchSLQ = "SELECT i_album.artwork AS Artwork, i_album.album_id AS Album_ID, i_album.name AS Album, GROUP_CONCAT(DISTINCT i_artist.name) AS Artists, i_album.genre_id AS Genre, i_album.year AS Year, TIME(SUM(i_track.total_time), 'unixepoch') AS Duration
                       FROM i_album
                           LEFT JOIN i_album_track ON (i_album.album_id = i_album_track.album_id)
                           LEFT JOIN i_track ON (i_album_track.track_id = i_track.track_id)
@@ -139,7 +134,7 @@ switch ($action) {
                       WHERE $filters AND genre_id IS NULL
                       GROUP BY i_album.album_id
                       UNION ALL
-                      SELECT i_album.artwork AS Artwork, i_album.album_id AS Album_ID, i_album.name AS Album, GROUP_CONCAT(DISTINCT i_artist.name) AS Artists, i_genre.name AS Genre, i_album.year AS Year, SUM(i_track.total_time) AS Duration
+                      SELECT i_album.artwork AS Artwork, i_album.album_id AS Album_ID, i_album.name AS Album, GROUP_CONCAT(DISTINCT i_artist.name) AS Artists, i_genre.name AS Genre, i_album.year AS Year, TIME(SUM(i_track.total_time), 'unixepoch') AS Duration
                       FROM i_genre
                           INNER JOIN i_album ON (i_genre.genre_id = i_album.genre_id) 
                           LEFT JOIN i_album_track ON (i_album.album_id = i_album_track.album_id)
@@ -151,7 +146,7 @@ switch ($action) {
         // Creating a new instance of the JSON_RecordSet class
         $rs = new JSON_RecordSet();
         //
-        $retrieval = $rs->getRecordSet($searchSLQ, 'Albums');
+        $retrieval = $rs->getRecordSet($searchSLQ);
         // Printing the results on the page
         echo $retrieval;
 
@@ -161,7 +156,7 @@ switch ($action) {
 
         if(!empty($album)) {
             // SQL to retrieve all information about tracks related to a given album (from the artist, track, album track and album tables)
-            $showTracksSQL = "SELECT i_album_track.track_number, i_track.name AS Track, i_artist.name AS Artist, i_track.total_time AS Duration, i_track.size
+            $showTracksSQL = "SELECT i_album_track.track_number, i_track.name AS Track, i_artist.name AS Artist, TIME(i_track.total_time, 'unixepoch') AS Duration, CAST(i_track.size*1.0/1000000 AS STRING) || ' MB' AS Size
                           FROM i_artist
                              INNER JOIN i_track ON (i_artist.artist_id = i_track.artist_id)
                              INNER JOIN i_album_track ON (i_track.track_id = i_album_track.track_id)
@@ -171,7 +166,7 @@ switch ($action) {
                           ORDER BY i_album_track.track_number";
 
             $rs = new JSON_RecordSet();
-            $retrieval = $rs->getRecordSet($showTracksSQL, 'Album');
+            $retrieval = $rs->getRecordSet($showTracksSQL);
             echo $retrieval;
 
         } else{
@@ -188,7 +183,7 @@ switch ($action) {
                             WHERE i_notes.album_id = $album AND i_notes.userID = '$userID'";
 
             $rs = new JSON_RecordSet();
-            $retrieval = $rs->getRecordSet($showNoteSQL, 'Note');
+            $retrieval = $rs->getRecordSet($showNoteSQL);
             echo $retrieval;
 
         } else{
@@ -211,15 +206,10 @@ switch ($action) {
                     ':user_id' => $userID,
                     ':note' => $note));
 
-            if($retrieval === true){
-                echo '{"status":"ok", "message":{"text": "New note added"}}';
-            } else{
-                echo '{"status":"error", "message":{"text": "New note not added, note already exists"}}';
-            }
-
+            echo '{"status":"ok", "message":{"text": "New note added"}}';
 
         } else {
-            echo '{"status":"error", "message":{"text": "New note not added... note text, album and signed in user required"}}';
+            echo '{"status":"error", "message":{"text": "New note not added. Sign in required OR note text and album not provided"}}';
         }
 
         break;
@@ -243,7 +233,7 @@ switch ($action) {
             echo '{"status":"ok", "message":{"text": "Note updated"}}';
 
         } else {
-            echo '{"status":"error", "message":{"text": "Note not updated... note text, album and signed in user required"}}';
+            echo '{"status":"error", "message":{"text": "Note not updated. Sign in required OR note text and album not provided"}}';
         }
 
         break;
@@ -264,8 +254,21 @@ switch ($action) {
             echo '{"status":"ok", "message":{"text": "Note deleted"}}';
 
         } else {
-            echo '{"status":"error", "message":{"text": "Note not deleted, album and signed in user required"}}';
+            echo '{"status":"error", "message":{"text": "Note not deleted. Sign in required OR album not provided"}}';
         }
+
+        break;
+
+    case 'showGenres':
+
+        $genreSQL = "SELECT *
+                     FROM i_genre";
+
+        $rs = new JSON_RecordSet();
+        //
+        $retrieval = $rs->getRecordSet($genreSQL);
+        // Printing the results on the page
+        echo $retrieval;
 
         break;
 

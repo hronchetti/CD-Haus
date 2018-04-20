@@ -1,0 +1,45 @@
+<!-- TOP TOOLBAR -->
+<form class="toolbar toolbar--top shadow" data-ng-controller="GenreController">
+    <fieldset class="toolbar__column">
+        <span class="icon-search"></span>
+        <input class="form__search" type="search" name="search" placeholder="Search all albums…">
+    </fieldset>
+    <fieldset class="toolbar__column">
+        <label class="hidden" for="genres"></label>
+        <select class="form__select" name="genre" id="genres">
+            <option disabled selected hidden>Select genre...</option>
+            <!-- POPULATE WITH GENRES FROM DATABASE -->
+            <option value="">Rock</option>
+        </select>
+        <span class="icon-dropdown toolbar__genre"></span>
+    </fieldset>
+</form>
+<!-- END TOP TOOLBAR -->
+<!-- MAIN CONTENT -->
+<section class="main__content" data-ng-controller="AlbumsController">
+    <h1>{{albumCount}}</h1>
+    <table class="data-table shadow">
+        <thead class="data-table__headings">
+        <tr>
+            <th class="data-table__quarter-width">Album title<span id="album-title" class="icon-order"></span></th>
+            <th class="data-table__quarter-width">Artist<span id="album-artist" class="icon-order"></span></th>
+            <th class="data-table__smaller-width">Genre<span id="album-genre" class="icon-order"></span></th>
+            <th class="data-table__smaller-width">Year<span id="album-year" class="icon-order"></span></th>
+            <th class="data-table__smaller-width">Duration<span id="album-duration" class="icon-order"></span></th>
+            <th></th>
+        </tr>
+        </thead>
+        <tbody>
+            <!-- repeat = for loop methodology 'album' is a local defined variable inside -->
+            <tr data-ng-repeat="album in albums">
+                <td>{{album.Album}}</td>
+                <td>{{album.Artists}}</td>
+                <td>{{album.Genre}}</td>
+                <td>{{album.Year}}</td>
+                <td>{{album.Duration}}</td>
+                <td><span class="icon-open"></span></td>
+            </tr>
+        </tbody>
+    </table>
+</section>
+<!-- END MAIN CONTENT -->

@@ -7,7 +7,7 @@ class Session
     private function __construct()
     {
         // Starting / resuming the session
-        ini_set("session.save_path", "/Applications/MAMP/htdocs/sessionData");
+        ini_set("session.save_path", "");
         // Resuming current session
         session_start();
     }

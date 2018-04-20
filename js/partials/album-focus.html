@@ -1,0 +1,65 @@
+<!-- TOP TOOLBAR -->
+<header class="toolbar toolbar--top toolbar--focus shadow">
+    <aside class="toolbar__column--single">
+        <span class="icon-previous toolbar--focus-icon"></span>
+        <span>Back to search</span>
+    </aside>
+</header>
+<!-- END TOP TOOLBAR -->
+<!-- MAIN CONTENT -->
+<article class="main__content focus">
+    <section class="focus__album">
+        <article class="focus__album-artwork">
+            <img src="Placeholder.jpg" alt=""/>
+        </article>
+        <article class="focus__album-title">
+            <h2 class="focus__album-title-text">Dial Masters, Original Choice Takes, Disk 1 West C (1995)</h2>
+            <h3><span class="highlight">by</span> The Elders McIntorsh And Edwards' Sanctified Singe</h3>
+        </article>
+        <article class="focus__album-details">
+            <p><span class="highlight--thin">Genre:</span> Contemporary Singer/Songwriter</p>
+            <p><span class="highlight--thin">Duration:</span> 01:00:00</p>
+            <p><span class="highlight--thin">Disc:</span> 1 of 1</p>
+        </article>
+    </section>
+    <table class="data-table data-table--focus shadow">
+        <thead class="data-table__headings">
+        <tr>
+            <th>#<span id="track-number" class="icon-order"></span></th>
+            <th class="data-table__quarter-width">Track<span id="track-name" class="icon-order"></span></th>
+            <th class="data-table__quarter-width">Artist<span id="track-artist" class="icon-order"></span></th>
+            <th>Duration<span id="track-duration" class="icon-order"></span></th>
+            <th>Size<span id="track-size" class="icon-order"></span></th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td>1</td>
+            <td>Blues For Allah / Sand Castles & Glass Camels / Unusual Occurrences In The Desert [Live At The Great American Music Hall, San Francisco, CA, August 13, 1975]</td>
+            <td>The Elders McIntorsh And Edwards' Sanctified Singe</td>
+            <td>01:00:00</td>
+            <td>138.87628 MB</td>
+        </tr>
+        </tbody>
+    </table>
+    <section>
+        <h2 class="notes__title">Notes</h2>
+        <article class="notes">
+            <form method="post" action="">
+                <section class="notes__display">
+                    <label class="hidden" for="notes-edit"></label>
+                    <textarea name="note-edit" class="notes__edit" disabled rows="2" id="notes-edit">Not so keen on this album as the first one, though it's still enjoyable with some muscular guitar.</textarea>
+                    <span class="icon-edit-note notes__icon"></span>
+                    <span class="icon-delete-note notes__icon"></span>
+                    <input id="notes__button-update" class="button hidden" type="submit" name="update-note" value="update">
+                </section>
+            </form>
+        </article>
+        <form method="post" action="">
+            <label class="hidden" for="notes-new"></label>
+            <textarea class="form__text-input notes__text-input" placeholder="New note..." name="note" id="notes-new"></textarea>
+            <input class="button notes__button" type="submit" name="new-note" value="Add note">
+        </form>
+    </section>
+</article>
+<!-- END MAIN CONTENT -->

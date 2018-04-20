@@ -10,17 +10,6 @@ NOTE 1: See reset.css for foundations
 NOTE 2: See fonts.css for icons and fonts declarations
 
 ---------------------------
-ANIMATIONS
--------------------------*/
-@keyframes flyIn{
-    0%{
-        right: -100%;
-    }
-    100%{
-        right: 0;
-    }
-}
-/*-------------------------
 GLOBAL
 -------------------------*/
 body{
@@ -108,7 +97,7 @@ MAIN CONTENT & TOOLBARS
     margin: 0 10px 0 0;
 }
 .main__content{
-    padding: 110px 40px 110px 40px;
+    padding: 110px 40px 60px 40px;
     width: 100%;
 }
 .pagination{
@@ -129,14 +118,6 @@ MAIN CONTENT & TOOLBARS
 /*-------------------------
 FOCUS (WHEN ALBUM CLICKED ON)
 -------------------------*/
-.main--focus{
-    position: absolute;
-    top: 0;
-    right: 0;
-    z-index: 1000;
-    min-height: 100vh;
-    animation: flyIn 0.5s forwards;
-}
 .focus__album{
     display: flex;
     flex-wrap: wrap;
@@ -176,6 +157,8 @@ TABLES
     width: 100%;
     border-radius: 10px;
     margin: 40px 0 0 0;
+    table-layout: fixed;
+    word-wrap: break-word;
 }
 .data-table--focus{
     margin: 40px 0;
@@ -184,7 +167,7 @@ TABLES
     border-bottom-left-radius: 10px; 
 }
 .data-table tr:last-child td:last-child{
-    border-bottom-right-radius: 10px; 
+    border-bottom-right-radius: 10px;
 }
 .data-table tr:nth-child(even){
     background: #FAFAFA;
@@ -217,14 +200,17 @@ TABLES
     background: #fff;
     cursor: default;
 }
-.data-table__headings tr:hover td:first-child{
+.data-table__headings tr:hover th:first-child{
     border-top-left-radius: 10px;
 }
-.data-table__headings tr:hover td:last-child{
+.data-table__headings tr:hover th:last-child{
     border-top-right-radius: 10px;
 }
 .data-table__quarter-width{
     width: 25%;
+}
+.data-table__smaller-width{
+    width: 14%;
 }
 /*-------------------------
 BUTTONS

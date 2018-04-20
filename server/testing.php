@@ -16,7 +16,8 @@ $albumList = new getAlbums();
 $URLBase = 'index.php?action=';
 
 // Add new text to page body
-$page->addToBody( "\t<h1>CD Haus Testing Page</h1>" );
+$page->addToBody( "\t<h1>CD Haus Testing Page</h1>\n
+                        \t<a href='../index.html'>Angular App</a>" );
 
 /*  ---------------------------------------------
  *  USER FORMS
@@ -29,18 +30,19 @@ $sessionUserID = $session->getProperty('user_id');
    (will save time when trying to figure out if signed in for note functionality) */
 if ($loggedInStatus === true){
     $userID = $sessionUserID;
-    $userFormAction = 'logoutUser';
+    $userFormAction = '<input type="hidden" name="action" value="logoutUser"/>';
     $userFormButton = '<input type="submit" value="SIGN OUT">';
 } else{
     $userID = '';
-    $userFormAction = 'loginUser';
+    $userFormAction = '<input type="hidden" name="action" value="loginUser"/>';
     $userFormButton = '<input type="submit" value="SIGN IN">';
 }
 
 $loginUser = <<<FORM
 
-    <form action="{$URLBase}$userFormAction" method="post">
+    <form action="$URLBase" method="get">
         <fieldset>
+            $userFormAction
             <legend>Login/Logout User</legend>
             <label>
                 User ID: 
@@ -64,8 +66,9 @@ $genres = $albumList->getAllGenres();
 
 $searchAlbums = <<<FORM
 
-    <form action="{$URLBase}search" method="post">
+    <form action="$URLBase" method="get">
         <fieldset>
+            <input type="hidden" name="action" value="search"/>
             <legend>Search Albums</legend>
             <label>
                 Search criteria:
@@ -109,8 +112,9 @@ $albums = $albumList->getAllAlbums();
 
 $showAlbumTracks = <<<FORM
 
-    <form action="{$URLBase}showTracks" method="post">
+    <form action="$URLBase" method="get">
         <fieldset>
+            <input type="hidden" name="action" value="showTracks"/>
             <legend>Show Tracks</legend>
             <label>
                 For Album: 
@@ -135,8 +139,9 @@ $albumsWithANote = $albumList->getAlbumsWithANote();
 
 $showNote = <<<FORM
 
-    <form action="{$URLBase}showNote" method="post">
+    <form action="$URLBase" method="get">
         <fieldset>
+            <input type="hidden" name="action" value="showNote"/>
             <legend>Show Note</legend>
             <label>
                 On Album: 
@@ -161,8 +166,9 @@ $albumsWithNoNote = $albumList->getAlbumsWithNoNote();
 
 $newNote = <<<FORM
     
-    <form action="{$URLBase}newNote" method="get">
+    <form action="$URLBase" method="get">
         <fieldset>
+            <input type="hidden" name="action" value="newNote"/>
             <legend>New Note</legend>
             <label>
                 On Album: 
@@ -187,8 +193,9 @@ FORM;
  *  ------------------------------------------ */
 $updateNote = <<<FORM
     
-    <form action="{$URLBase}updateNote" method="post">
+    <form action="$URLBase" method="get">
         <fieldset>
+            <input type="hidden" name="action" value="updateNote"/>
             <legend>Edit Note</legend>
             <label>
                 On Album: 
@@ -210,8 +217,9 @@ FORM;
 //
 $deleteNote = <<<FORM
     
-    <form action="{$URLBase}deleteNote" method="post">
+    <form action="$URLBase" method="get">
         <fieldset>
+            <input type="hidden" name="action" value="deleteNote"/>
             <legend>Delete Note</legend>
             <label>
                 On Album: 
