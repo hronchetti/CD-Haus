@@ -7,17 +7,40 @@
 
     angular.module('CDHaus').controller('IndexController',
         [
-            // Scope dependency binds HTML and JS together by delivering data from the model
             '$scope',
             'dataService',
 
+            /* Dependencies
+             * ------------
+             * $scope binds HTML and JS together by delivering data to the view from the controller (from the model)
+             *
+             * dataService is our custom built service that contains several methods for accessing data from the
+             * model using http requests
+            */
+
             function ($scope, dataService) {
+
+                var userLogin = function (username, password) {
+                    dataService.userLogin(username, password).then(
+                        // Promise is returned
+                        function (response) {
+                            // Promise is fulfilled
+                        }, function (err) {
+                            // Promise not fulfilled
+                            console.log(err);
+
+                        }, function (notify) {
+                            // Notify status of promise fulfillment
+                            console.log(notify);
+                        }
+                    );
+
+                };
 
                 $scope.title = 'Sign in';
                 $scope.userID = '';
                 $scope.buttonText = 'Sign In';
             }
-            // Do login here so album and track controllers can inherit (they are inside in HTML)
         ]
     ).controller('AlbumsController',
         [
@@ -31,17 +54,12 @@
 
                 var getGenres = function () {
                     dataService.getGenres().then(
-                        // Promise is returned
+
                         function (response) {
-                            // Promise is fulfilled
                             $scope.genres = response.data;
-
                         }, function (err) {
-                            // Promise not fulfilled
                             console.log(err);
-
                         }, function (notify) {
-                            //
                             console.log(notify);
                         }
                     );
@@ -49,16 +67,14 @@
 
                 $scope.getAlbums = function (selectedGenre, searchCriteria) {
                     dataService.getAlbums(selectedGenre, searchCriteria).then(
-                        // Promise is returned
+
                         function (response) {
-                            // Promise is fulfilled
                             $scope.albumCount = response.rowCount + ' Albums';
                             $scope.albums = response.data;
-
                         }, function (err) {
-                            // Promise not fulfilled
                             console.log(err);
-
+                        }, function (notify) {
+                            console.log(notify);
                         }
                     );
                 };
@@ -84,28 +100,28 @@
             function ($scope, dataService, $routeParams, $window) {
 
                 // Defining the getTracks function for use
-                var getTracks = function(Album_ID){
+                var getTracks = function (Album_ID) {
                     dataService.getTracks(Album_ID).then(
-                      function (response) {
-                          $scope.tracks = response.data;
 
-                      }, function (err) {
-                            // Promise not fulfilled
+                        function (response) {
+                            $scope.tracks = response.data;
+                        }, function (err) {
                             console.log(err);
-
+                        }, function (notify) {
+                            console.log(notify);
                         }
                     );
                 };
 
-                var getAlbumInfo = function(Album_ID){
+                var getAlbumInfo = function (Album_ID) {
                     dataService.getAlbumInfo(Album_ID).then(
+
                         function (response) {
                             $scope.chosenAlbum = response.data[0];
-
                         }, function (err) {
-                            // Promise not fulfilled
                             console.log(err);
-
+                        }, function (notify) {
+                            console.log(notify);
                         }
                     );
                 };

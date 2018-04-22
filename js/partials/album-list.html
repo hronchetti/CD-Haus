@@ -31,15 +31,18 @@
             <th></th>
         </tr>
         </thead>
-        <tbody data-ng-show="albums.length > 0">
+        <tbody>
             <!-- repeat = (for loop methodology) 'album' is a local defined variable that iterates through albums -->
-            <tr data-ng-repeat="album in albums" data-ng-click="selectAlbum($event, album)">
+            <tr data-ng-repeat="album in albums" data-ng-click="selectAlbum($event, album)" data-ng-hide="albums[0].Album_ID == null">
                 <td>{{album.Album}}</td>
                 <td>{{album.Artists}}</td>
                 <td>{{album.Genre}}</td>
                 <td>{{album.Year}}</td>
                 <td>{{album.Duration}}</td>
                 <td><span class="icon-open"></span></td>
+            </tr>
+            <tr data-ng-show="albums[0].Album_ID == null">
+                <td colspan="6">No albums match your search</td>
             </tr>
         </tbody>
     </table>

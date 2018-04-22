@@ -7,9 +7,46 @@
     angular.module('CDHaus').service('dataService',
         [
             '$q', '$http',
+
+            /* Dependencies
+             * ------------
+             * $q is a built in AngularJS service for promises
+             *
+             * $http is a built in AngularJS service for dealing with http requests,
+             * using $http makes it possible to  send data to and from the server without page refresh.
+             * This is how we achieve an AJAX single page application
+            */
+
             function ($q, $http) {
                 // Making a variable for the URL to the data model to save re-writing it multiple times
                 var urlBase = 'server/index.php';
+
+                /*
+                 *
+                 * Service function for signing in users
+                 *
+                 */
+
+                this.userLogin = function (userID, password) {
+                    var defer = $q.defer(),
+                        data = {
+                            //
+                            action: 'loginUser',
+                            userID: userID,
+                            password: password
+                        };
+
+                    $http.get(urlBase, {params: data, cache: true}).
+                    success(function (response) {
+                        defer.resolve({
+                            data: response.message.text
+                        });
+                    }).error(function (err) {
+                        defer.reject(err);
+                    });
+
+                    return defer.promise;
+                };
 
                 /*
                  *
@@ -24,8 +61,8 @@
                             genre: genre,
                             criteria: criteria
                         };
-
-                    $http.get(urlBase, {params: data, cache: true}).// $http service promise abstraction
+                    // $http service promise abstraction success/error instead of normal promise
+                    $http.get(urlBase, {params: data, cache: true}).
                     success(function (response) {
                         defer.resolve({
                             data: response.ResultSet.Result,
@@ -50,7 +87,7 @@
                             action: 'showTracks',
                             album: Album_ID
                         };
-
+                    // $http service promise abstraction success/error instead of normal promise
                     $http.get(urlBase, {params: data, cache: true}).// $http service promise abstraction
                     success(function (response) {
                         defer.resolve({
