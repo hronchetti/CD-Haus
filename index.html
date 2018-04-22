@@ -20,7 +20,7 @@
             <label class="form__label" for="sign-in__password">Password</label>
             <input type="password" id="sign-in__password" class="form__text-input" placeholder="•••••••••" data-ng-model="password"/>
             <p class="sidebar__login-feedback">{{feedback}}</p>
-            <input type="submit" value="{{buttonText}}" class="button" data-ng-click="loginHandler($event, user_id, password)"/>
+            <input type="submit" value="{{buttonText}}" class="button" data-ng-click="loginHandler($event, user_id, password)" data-ng-init="buttonText='Sign In'"/>
         </form>
         <!-- LINK TO PHP TESTING PAGE-->
         <a href="server/testing.php">Testing page</a>

@@ -56,6 +56,9 @@
                                 // Logout success
                                 $scope.buttonText = 'Sign In';
                                 $scope.feedback = '';
+                                /*document.getElementById('sign-in__password').value = null;
+                                document.getElementById('sign-in__username').value = null;*/
+
                             } else{
                                 // Logout failed, feedback why to user
                                 $scope.feedback = response.data;

@@ -64,28 +64,42 @@ switch ($action) {
     case 'loginUser':
         // password and userID retrieved at top of page in 'ESSENTIAL COMPONENTS'
         if (!empty($userID) && !empty($password)) {
-            // Preparing a statement for selecting a users password from DB
-            $stmt = $db->prepare("SELECT user_id, password
-                                  FROM i_user 
-                                  WHERE user_id = :user_id");
-            // Executing the prepared statement and storing the result as an object in an array
-            $stmt->execute(array(':user_id' => $userID));
-            // Fetching the object whilst looping through the array of results returned by the statement above
-            while ($hash = $stmt->fetchObject()) {
-                // Verifying the given $password is the un-hashed version of the password row in the database
-                if (password_verify($password, $hash->password)) {
-                    // Correct password, user logged in
-                    $session->setProperty('loggedIn', true);
-                    $session->setProperty('user_id', $userID);
 
-                    echo '{"status":"ok", "message":{"text": "Sign in successful"}}';
+            // Check if user exists in the database
+            $userCheck = $db->prepare("SELECT user_id
+                                       FROM i_user
+                                       WHERE user_id = :user_id");
+            $userCheck->execute(array(':user_id' => $userID));
 
-                } else {
-                    // Incorrect password, user not logged in. Error message sent back
-                    echo '{"status":"error", "message":{"text": "Password incorrect"}}';
+            // If fetchObject returns a row it means the user_id entered exists in the database (step into if)
+            if($userCheck->fetchObject()){
+
+                $stmt = $db->prepare("SELECT user_id, password
+                                      FROM i_user 
+                                      WHERE user_id = :user_id");
+                $stmt->execute(array(':user_id' => $userID));
+                // Fetching the object whilst looping through the array of results returned by the statement above
+                while ($hash = $stmt->fetchObject()) {
+                    // Verifying the given $password is the un-hashed version of the password row in the database
+                    if (password_verify($password, $hash->password)) {
+                        // Correct password, user logged in
+                        $session->setProperty('loggedIn', true);
+                        $session->setProperty('user_id', $userID);
+                        // Password entered matches the user_id entered in the database
+                        echo '{"status":"ok", "message":{"text": "Sign in successful"}}';
+
+                    } else {
+                        // Incorrect password, user not logged in. Error message sent back
+                        echo '{"status":"error", "message":{"text": "Password incorrect"}}';
+                    }
                 }
+            } else{
+                // fetchObject() did not return any rows, user_id entered not in the database
+                echo '{"status":"error", "message":{"text": "User incorrect"}}';
             }
+
         } else {
+            // Either user or password (or both) were empty
             echo '{"status":"error", "message":{"text": "User and password required"}}';
         }
 
