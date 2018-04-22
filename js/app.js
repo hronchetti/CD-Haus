@@ -17,11 +17,13 @@
             function ($routeProvider) {
 
                 $routeProvider
-                    .when('/album/:albumid', {
+                    .when('/album/:Album_ID', {
                         controller: 'TracksController',
                         templateUrl: 'js/partials/album-focus.html'
                     }).otherwise({
-                    redirectTo: '/'
+                        redirectTo: '/',
+                        controller: 'AlbumsController',
+                        templateUrl: 'js/partials/album-list.html'
                 });
             }
         ]

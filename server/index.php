@@ -106,7 +106,7 @@ switch ($action) {
             // Filter based on user input of genre AND search text
             $filters = "i_album.genre_id = $genre
                         AND (Album LIKE '%$criteria%'
-                        OR i_artist.name LIKE '%$criteria%'";
+                        OR i_artist.name LIKE '%$criteria%')";
 
         } else if ((!empty($genre)) && (empty($criteria))){
             // Filter just by genre
@@ -125,8 +125,8 @@ switch ($action) {
             // Nothing set by user, order by album name (ascending)
             $ordering = 'i_album.name ASC';
         }
-        // Feel like there must have been an easier way but I couldn't find it!
-        $searchSLQ = "SELECT i_album.artwork AS Artwork, i_album.album_id AS Album_ID, i_album.name AS Album, GROUP_CONCAT(DISTINCT i_artist.name) AS Artists, i_album.genre_id AS Genre, i_album.year AS Year, TIME(SUM(i_track.total_time), 'unixepoch') AS Duration
+        //
+        $searchSLQ = "SELECT i_album.artwork AS Artwork, i_album.album_id AS Album_ID, i_album.name AS Album, GROUP_CONCAT(DISTINCT i_artist.name) AS Artists, i_album.genre_id AS Genre, i_album.year AS Year, TIME(SUM(i_track.total_time)/1000, 'unixepoch') AS Duration
                       FROM i_album
                           LEFT JOIN i_album_track ON (i_album.album_id = i_album_track.album_id)
                           LEFT JOIN i_track ON (i_album_track.track_id = i_track.track_id)
@@ -134,7 +134,7 @@ switch ($action) {
                       WHERE $filters AND genre_id IS NULL
                       GROUP BY i_album.album_id
                       UNION ALL
-                      SELECT i_album.artwork AS Artwork, i_album.album_id AS Album_ID, i_album.name AS Album, GROUP_CONCAT(DISTINCT i_artist.name) AS Artists, i_genre.name AS Genre, i_album.year AS Year, TIME(SUM(i_track.total_time), 'unixepoch') AS Duration
+                      SELECT i_album.artwork AS Artwork, i_album.album_id AS Album_ID, i_album.name AS Album, GROUP_CONCAT(DISTINCT i_artist.name) AS Artists, i_genre.name AS Genre, i_album.year AS Year, TIME(SUM(i_track.total_time)/1000, 'unixepoch') AS Duration
                       FROM i_genre
                           INNER JOIN i_album ON (i_genre.genre_id = i_album.genre_id) 
                           LEFT JOIN i_album_track ON (i_album.album_id = i_album_track.album_id)
@@ -156,7 +156,7 @@ switch ($action) {
 
         if(!empty($album)) {
             // SQL to retrieve all information about tracks related to a given album (from the artist, track, album track and album tables)
-            $showTracksSQL = "SELECT i_album_track.track_number, i_track.name AS Track, i_artist.name AS Artist, TIME(i_track.total_time, 'unixepoch') AS Duration, CAST(i_track.size*1.0/1000000 AS STRING) || ' MB' AS Size
+            $showTracksSQL = "SELECT i_album_track.track_number, i_track.name AS Track, i_artist.name AS Artist, TIME(i_track.total_time /1000, 'unixepoch') AS Duration, CAST(i_track.size*1.0/1000000 AS STRING) || ' MB' AS Size
                           FROM i_artist
                              INNER JOIN i_track ON (i_artist.artist_id = i_track.artist_id)
                              INNER JOIN i_album_track ON (i_track.track_id = i_album_track.track_id)
@@ -260,9 +260,10 @@ switch ($action) {
         break;
 
     case 'showGenres':
-
+        // case to make all the genres accessible so filtering is dynamically populated from the database
         $genreSQL = "SELECT *
-                     FROM i_genre";
+                     FROM i_genre
+                     ORDER BY name";
 
         $rs = new JSON_RecordSet();
         //
@@ -270,6 +271,27 @@ switch ($action) {
         // Printing the results on the page
         echo $retrieval;
 
+        break;
+    case 'showAlbumInfo':
+
+        if(!empty($album)) {
+            $albumInfoSQL = "SELECT i_album.artwork AS Artwork, i_album.album_id AS Album_ID, i_album.name AS Album, i_artist.name AS Artists, i_genre.name AS Genre, i_album.year AS Year, TIME(SUM(i_track.total_time)/1000, 'unixepoch') AS Duration
+                          FROM i_genre
+                              INNER JOIN i_album ON (i_genre.genre_id = i_album.genre_id) 
+                              LEFT JOIN i_album_track ON (i_album.album_id = i_album_track.album_id)
+                              LEFT JOIN i_track ON (i_album_track.track_id = i_track.track_id)
+                              LEFT JOIN i_artist ON (i_track.artist_id = i_artist.artist_id)
+                          WHERE i_album.album_id = $album
+                          GROUP BY i_album.album_id";
+
+            $rs = new JSON_RecordSet();
+            //
+            $retrieval = $rs->getRecordSet($albumInfoSQL);
+            // Printing the results on the page
+            echo $retrieval;
+        } else{
+            echo '{"status":"error", "message":{"text": "No album chosen"}}';
+        }
         break;
 
     default:

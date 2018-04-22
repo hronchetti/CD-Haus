@@ -1,22 +1,24 @@
 <!-- TOP TOOLBAR -->
-<form class="toolbar toolbar--top shadow" data-ng-controller="GenreController">
+<form class="toolbar toolbar--top shadow">
     <fieldset class="toolbar__column">
         <span class="icon-search"></span>
-        <input class="form__search" type="search" name="search" placeholder="Search all albums…">
+        <input class="form__search" type="search" placeholder="Search all albums…" data-ng-change="getAlbums(selectedGenre, searchCriteria)" data-ng-model="searchCriteria"/>
     </fieldset>
     <fieldset class="toolbar__column">
         <label class="hidden" for="genres"></label>
-        <select class="form__select" name="genre" id="genres">
-            <option disabled selected hidden>Select genre...</option>
+        <select class="form__select" id="genres" data-ng-change="getAlbums(selectedGenre, searchCriteria)" data-ng-model="selectedGenre">
+            <option selected value="">All Genres</option>
             <!-- POPULATE WITH GENRES FROM DATABASE -->
-            <option value="">Rock</option>
+            <optgroup label="Genres">
+                <option data-ng-repeat="genre in genres" value="{{genre.genre_id}}">{{genre.name}}</option>
+            </optgroup>
         </select>
         <span class="icon-dropdown toolbar__genre"></span>
     </fieldset>
 </form>
 <!-- END TOP TOOLBAR -->
 <!-- MAIN CONTENT -->
-<section class="main__content" data-ng-controller="AlbumsController">
+<section class="main__content" data-ng-init="getAlbums()">
     <h1>{{albumCount}}</h1>
     <table class="data-table shadow">
         <thead class="data-table__headings">
@@ -29,9 +31,9 @@
             <th></th>
         </tr>
         </thead>
-        <tbody>
-            <!-- repeat = for loop methodology 'album' is a local defined variable inside -->
-            <tr data-ng-repeat="album in albums">
+        <tbody data-ng-show="albums.length > 0">
+            <!-- repeat = (for loop methodology) 'album' is a local defined variable that iterates through albums -->
+            <tr data-ng-repeat="album in albums" data-ng-click="selectAlbum($event, album)">
                 <td>{{album.Album}}</td>
                 <td>{{album.Artists}}</td>
                 <td>{{album.Genre}}</td>

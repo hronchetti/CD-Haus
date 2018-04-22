@@ -17,25 +17,21 @@
         <form>
             <h4>{{title}}</h4>
             <label class="form__label" for="sign-in__username">User</label>
-            <input type="text" name="user_id" id="sign-in__username" class="form__text-input" placeholder="Your email" value="{{userID}}">
+            <input type="text" name="user_id" id="sign-in__username" class="form__text-input" placeholder="Your email" value="{{userID}}"/>
             <label class="form__label" for="sign-in__password">Password</label>
-            <input type="password" name="password" id="sign-in__password" class="form__text-input" placeholder="•••••••••">
-            <input type="submit" value="{{buttonText}}" class="button">
+            <input type="password" name="password" id="sign-in__password" class="form__text-input" placeholder="•••••••••"/>
+            <input type="submit" value="{{buttonText}}" class="button"/>
         </form>
         <!-- LINK TO PHP TESTING PAGE-->
         <a href="server/testing.php">Testing page</a>
     </aside>
     <!-- END SIDEBAR -->
-
     <main class="main">
-        <section data-ng-include="'js/partials/album-list.html'">
+        <section data-ng-view>
 
 
         </section>
         <!-- SWITCH PARTIAL DEPENDING ON URL -->
-        <section data-ng-view>
-
-        </section>
     </main>
     <!-- ANGULARJS LIBRARIES-->
     <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.25/angular.js"></script>
