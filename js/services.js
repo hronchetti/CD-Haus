@@ -27,13 +27,37 @@
                  *
                  */
 
-                this.userLogin = function (userID, password) {
+                this.loginUser = function (userID, password) {
                     var defer = $q.defer(),
                         data = {
                             //
                             action: 'loginUser',
                             userID: userID,
                             password: password
+                        };
+
+                    $http.get(urlBase, {params: data, cache: true}).
+                    success(function (response) {
+                        defer.resolve({
+                            data: response.message.text
+                        });
+                    }).error(function (err) {
+                        defer.reject(err);
+                    });
+
+                    return defer.promise;
+                };
+
+                /*
+                 *
+                 * Service function for signing in users
+                 *
+                 */
+
+                this.logoutUser = function (){
+                    var defer = $q.defer(),
+                        data = {
+                            action: 'logoutUser'
                         };
 
                     $http.get(urlBase, {params: data, cache: true}).

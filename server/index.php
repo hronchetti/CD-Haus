@@ -86,7 +86,7 @@ switch ($action) {
                 }
             }
         } else {
-            echo '{"status":"error", "message":{"text": "Username and password required"}}';
+            echo '{"status":"error", "message":{"text": "User and password required"}}';
         }
 
         break;

@@ -20,11 +20,21 @@
 
             function ($scope, dataService) {
 
-                var userLogin = function (username, password) {
-                    dataService.userLogin(username, password).then(
+                // Function for logging user in
+                var loginUser = function(user_id, password){
+                    dataService.loginUser(user_id, password).then(
                         // Promise is returned
                         function (response) {
                             // Promise is fulfilled
+                            if(response.data === 'Sign in successful'){
+                                // Login success
+                                $scope.buttonText = 'Sign Out';
+                                $scope.feedback = '';
+                            } else{
+                                // Login failed, feedback why to user
+                                $scope.feedback = response.data;
+                            }
+
                         }, function (err) {
                             // Promise not fulfilled
                             console.log(err);
@@ -34,12 +44,45 @@
                             console.log(notify);
                         }
                     );
-
                 };
 
-                $scope.title = 'Sign in';
-                $scope.userID = '';
-                $scope.buttonText = 'Sign In';
+                // Function for logging user out
+                var logoutUser = function(){
+                    dataService.logoutUser().then(
+                        // Promise is returned
+                        function (response) {
+                            // Promise is fulfilled
+                            if(response.data === 'Sign out successful'){
+                                // Logout success
+                                $scope.buttonText = 'Sign In';
+                                $scope.feedback = '';
+                            } else{
+                                // Logout failed, feedback why to user
+                                $scope.feedback = response.data;
+                            }
+
+                        }, function (err) {
+                            // Promise not fulfilled
+                            console.log(err);
+
+                        }, function (notify) {
+                            // Notify status of promise fulfillment
+                            console.log(notify);
+                        }
+                    );
+                };
+
+                $scope.loginHandler = function($event, user_id, password){
+
+                    if($scope.buttonText === 'Sign In'){
+
+                        loginUser(user_id, password);
+
+                    } else{
+                        logoutUser();
+                    }
+
+                };
             }
         ]
     ).controller('AlbumsController',

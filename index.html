@@ -15,12 +15,12 @@
             <img class="sidebar__logo-disc" src="./resources/CD-Haus-logo.svg" alt="CD Haus Logo"/><span class="sidebar__logo-text">CD Haus</span>
         </div>
         <form>
-            <h4>{{title}}</h4>
             <label class="form__label" for="sign-in__username">User</label>
-            <input type="text" name="user_id" id="sign-in__username" class="form__text-input" placeholder="Your email" value="{{userID}}"/>
+            <input type="text" name="user_id" id="sign-in__username" class="form__text-input" placeholder="Your email" data-ng-model="user_id"/>
             <label class="form__label" for="sign-in__password">Password</label>
-            <input type="password" name="password" id="sign-in__password" class="form__text-input" placeholder="•••••••••"/>
-            <input type="submit" value="{{buttonText}}" class="button"/>
+            <input type="password" id="sign-in__password" class="form__text-input" placeholder="•••••••••" data-ng-model="password"/>
+            <p class="sidebar__login-feedback">{{feedback}}</p>
+            <input type="submit" value="{{buttonText}}" class="button" data-ng-click="loginHandler($event, user_id, password)"/>
         </form>
         <!-- LINK TO PHP TESTING PAGE-->
         <a href="server/testing.php">Testing page</a>

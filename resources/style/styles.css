@@ -28,6 +28,7 @@ SIDEBAR
     height: 100vh;
     padding: 70px 40px;
     z-index: 1100;
+    overflow-y: auto;
 }
 .sidebar__logo{
     width: 100%;
@@ -46,6 +47,12 @@ SIDEBAR
     font: 700 24px/36px 'Circular', sans-serif;
     letter-spacing: 1px;
     color: #4E4366;
+}
+.sidebar__login-feedback{
+    color: red;
+    font-size: 12px;
+    line-height: 18px;
+    margin: 20px 0 0 10px;
 }
 /*-------------------------
 MAIN CONTENT & TOOLBARS
@@ -227,7 +234,7 @@ BUTTONS
     letter-spacing: 2px;
     text-transform: uppercase;
     padding: 0 30px;
-    margin: 30px 0;
+    margin: 30px 0 30px 0;
     cursor: pointer;
     /* ANIMATION */
     transition-property: transform;
