@@ -41,7 +41,8 @@
         </tr>
         </tbody>
     </table>
-    <section>
+    <!-- NOTES SECTION -->
+    <section data-ng-show="signedIn=true">
         <h2 class="notes__title">Notes</h2>
         <article class="notes">
             <form method="post" action="">
@@ -60,5 +61,6 @@
             <input class="button notes__button" type="submit" name="new-note" value="Add note"/>
         </form>
     </section>
+    <!-- END NOTES SECTION -->
 </article>
 <!-- END MAIN CONTENT -->

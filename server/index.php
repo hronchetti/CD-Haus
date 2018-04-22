@@ -117,7 +117,7 @@ switch ($action) {
 
         // If search entries or genre filters are set by the user then implement, if not show all albums
         if((!empty($genre)) && (!empty($criteria))){
-            // Filter based on user input of genre AND search text
+            // Filter results by search criteria and genre
             $filters = "i_album.genre_id = $genre
                         AND (Album LIKE '%$criteria%'
                         OR i_artist.name LIKE '%$criteria%')";
@@ -127,19 +127,26 @@ switch ($action) {
             $filters = "i_album.genre_id = $genre";
 
         } else if ((empty($genre)) && (!empty($criteria))){
-            // Filter just by search text
+            // Filter just by search criteria
             $filters = "Album LIKE '%$criteria%'
                         OR i_artist.name LIKE '%$criteria%'";
         } else{
-            // Show all results
+            // Show all results, no filtering
             $filters = 1;
         }
+
         // If ordering filters are set by the user then implement, if not order by album name
         if (empty($ordering)) {
             // Nothing set by user, order by album name (ascending)
             $ordering = 'i_album.name ASC';
         }
-        //
+
+        /* UNION was used to bind 2 SQL statements together
+         * i_album must be the initial table selected from
+         * to get all rows because RIGHT JOIN is not supported
+         * in SQLite
+         */
+
         $searchSLQ = "SELECT i_album.artwork AS Artwork, i_album.album_id AS Album_ID, i_album.name AS Album, GROUP_CONCAT(DISTINCT i_artist.name) AS Artists, i_album.genre_id AS Genre, i_album.year AS Year, TIME(SUM(i_track.total_time)/1000, 'unixepoch') AS Duration
                       FROM i_album
                           LEFT JOIN i_album_track ON (i_album.album_id = i_album_track.album_id)
@@ -157,11 +164,9 @@ switch ($action) {
                       WHERE $filters
                       GROUP BY i_album.album_id
                       ORDER BY $ordering";
-        // Creating a new instance of the JSON_RecordSet class
+
         $rs = new JSON_RecordSet();
-        //
         $retrieval = $rs->getRecordSet($searchSLQ);
-        // Printing the results on the page
         echo $retrieval;
 
         break;
@@ -184,6 +189,7 @@ switch ($action) {
             echo $retrieval;
 
         } else{
+            // Album id was empty
             echo '{"status":"error", "message":{"text": "No album chosen"}}';
         }
         break;
@@ -200,7 +206,13 @@ switch ($action) {
             $retrieval = $rs->getRecordSet($showNoteSQL);
             echo $retrieval;
 
-        } else{
+        } else if((empty($userID)) && (!empty($album))){
+            echo '{"status":"error", "message":{"text": "Sign in to show notes"}}';
+
+        } else if((!empty($userID)) && (empty($album))){
+            echo '{"status":"error", "message":{"text": "No album chosen"}}';
+
+        } else {
             echo '{"status":"error", "message":{"text": "Sign in to show notes"}}';
         }
 

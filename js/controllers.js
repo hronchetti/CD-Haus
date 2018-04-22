@@ -30,11 +30,11 @@
                                 // Login success
                                 $scope.buttonText = 'Sign Out';
                                 $scope.feedback = '';
+                                $scope.signedIn = true;
                             } else{
                                 // Login failed, feedback why to user
                                 $scope.feedback = response.data;
                             }
-
                         }, function (err) {
                             // Promise not fulfilled
                             console.log(err);
@@ -56,8 +56,7 @@
                                 // Logout success
                                 $scope.buttonText = 'Sign In';
                                 $scope.feedback = '';
-                                /*document.getElementById('sign-in__password').value = null;
-                                document.getElementById('sign-in__username').value = null;*/
+                                $scope.signedIn = false;
 
                             } else{
                                 // Logout failed, feedback why to user
@@ -75,10 +74,14 @@
                     );
                 };
 
+                /* Scope method to decide which login method is used
+                 * If buttonText is 'Sign In' the user is not signed in
+                 * therefore, use sign in function. Otherwise sign out
+                 */
+
                 $scope.loginHandler = function($event, user_id, password){
 
                     if($scope.buttonText === 'Sign In'){
-
                         loginUser(user_id, password);
 
                     } else{

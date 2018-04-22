@@ -50,7 +50,7 @@
 
                 /*
                  *
-                 * Service function for signing in users
+                 * Service function for signing out users
                  *
                  */
 
