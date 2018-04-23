@@ -21,6 +21,7 @@ $album = isset($_REQUEST['album']) ? $_REQUEST['album'] : null;
 $userID = isset($_REQUEST['userID']) ? $_REQUEST['userID'] : null;
 $note = isset($_REQUEST['note']) ? $_REQUEST['note'] : null;
 $password = isset($_REQUEST['password']) ? $_REQUEST['password'] : null;
+$data = isset($_REQUEST['data']) ? $_REQUEST['data'] : null;
 // Search Variables
 $criteria = isset($_REQUEST['criteria']) ? $_REQUEST['criteria'] : null;
 $genre = isset($_REQUEST['genre']) ? $_REQUEST['genre'] : null;
@@ -49,14 +50,6 @@ if (empty($action)) {
 }
 
 /*  ---------------------------------------------
- *  VARIABLE CONTROL
- *  ------------------------------------------ */
-
-$loggedInStatus = $session->getProperty('loggedIn');
-$sessionUserID = $session->getProperty('user_id');
-// Implement some checking for session ID matching ID that comes with data
-
-/*  ---------------------------------------------
  *  ACTIONS
  *  -----------------------------------------  */
 
@@ -82,19 +75,20 @@ switch ($action) {
                 while ($hash = $stmt->fetchObject()) {
                     // Verifying the given $password is the un-hashed version of the password row in the database
                     if (password_verify($password, $hash->password)) {
-                        // Correct password, user logged in
-                        $session->setProperty('loggedIn', true);
+
+                        $session->setProperty('signedIn', true);
                         $session->setProperty('user_id', $userID);
-                        // Password entered matches the user_id entered in the database
+
+                        // Password entered matches the user_id entered in the database (logged in)
                         echo '{"status":"ok", "message":{"text": "Sign in successful"}}';
 
                     } else {
-                        // Incorrect password, user not logged in. Error message sent back
+                        // Incorrect password, user not logged in
                         echo '{"status":"error", "message":{"text": "Password incorrect"}}';
                     }
                 }
             } else{
-                // fetchObject() did not return any rows, user_id entered not in the database
+                // fetchObject() did not return any rows, user_id entered is not in the database
                 echo '{"status":"error", "message":{"text": "User incorrect"}}';
             }
 
@@ -107,9 +101,24 @@ switch ($action) {
 
     case 'logoutUser':
 
+
         $session->clearSession();
 
         echo '{"status":"ok","message":{"text":"Sign out successful"}}';
+
+        break;
+
+    case 'getSessionData':
+
+        if(!empty($data)){
+
+            // echo the session property and its value returned
+            echo '{"status":"ok","message":{"'. $data . '":"' . $session->getProperty($data) .'"}}';
+
+        } else{
+            // data (property) was not received
+            echo '{"status":"error","message":{"text":"Not property given"}}';
+        }
 
         break;
 
@@ -195,7 +204,7 @@ switch ($action) {
         break;
 
     case 'showNote':
-        // userID retrieved at top of page in 'ESSENTIAL COMPONENTS'
+
         if((!empty($userID)) && (!empty($album))){
 
             $showNoteSQL = "SELECT *

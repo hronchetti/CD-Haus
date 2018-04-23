@@ -4,6 +4,7 @@
 (function () {
 
     "use strict";  // Using javascript strict syntax mode to facilitate quality syntax
+
     angular.module('CDHaus').service('dataService',
         [
             '$q', '$http',
@@ -30,7 +31,7 @@
                 this.loginUser = function (userID, password) {
                     var defer = $q.defer(),
                         data = {
-                            //
+
                             action: 'loginUser',
                             userID: userID,
                             password: password
@@ -151,7 +152,7 @@
 
                 /*
                  *
-                 * Service function for
+                 * Service function for getting the album info when an album is clicked on
                  *
                  */
 
@@ -173,12 +174,84 @@
 
                     return defer.promise;
                 };
-            }
 
+                /*
+                 *
+                 * Service function for note functions,
+                 *
+                 */
+
+                this.showNote = function (userID, album){
+                    var defer = $q.defer(),
+                        data = {
+                            action: 'showNote',
+                            userID: userID,
+                            album: album
+                        };
+
+                    $http.get(urlBase, {params: data, cache: true}).// $http service promise abstraction
+                    success(function (response) {
+                        defer.resolve({
+                            data: response
+
+                        });
+                    }).error(function (err) {
+                        defer.reject(err);
+                    });
+
+                    return defer.promise;
+                };
+
+                /*
+                 *
+                 * Service function for note functions,
+                 *
+                 */
+
+                this.noteService = function (action, userID, album){
+                    var defer = $q.defer(),
+                        data = {
+                            action: action,
+                            userID: userID,
+                            album: album
+                        };
+
+                    $http.get(urlBase, {params: data, cache: true}).// $http service promise abstraction
+                    success(function (response) {
+                        defer.resolve({
+                            data: response.ResultSet.Result
+                        });
+                    }).error(function (err) {
+                        defer.reject(err);
+                    });
+
+                    return defer.promise;
+                };
+
+                this.sessionService = function (property){
+                    var defer = $q.defer(),
+                        data = {
+                            action: 'getSessionData',
+                            data: property
+                        };
+
+                    $http.get(urlBase, {params: data, cache: true}).// $http service promise abstraction
+                    success(function (response) {
+                        defer.resolve({
+                            data: response.message
+                        });
+                    }).error(function (err) {
+                        defer.reject(err);
+                    });
+
+                    return defer.promise;
+                };
+            }
         ]
     ).service('applicationData',
-
+        // Access $scope from highest level (root)
         function ($rootScope) {
+            // sharedService is an object because without being so changes will not be received in child all controllers
             var sharedService = {};
             sharedService.info = {};
 

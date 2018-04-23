@@ -20,20 +20,47 @@
 
             function ($scope, dataService) {
 
+                var getSessionProperty = function(property){
+                    dataService.sessionService(property).then(
+                        // Promise is returned
+                        function (response) {
+                            // Promise is fulfilled
+                            if(response.signedIn === 1){
+                                // User signed in
+                                $scope.signedIn = true;
+                                $scope.buttonText = 'Sign Out';
+                                
+                            } else if(response.user_id > 1){
+                                $scope.userID = response.user_id
+
+                            } else{
+
+                            }
+
+                        }, function (err) {
+                            // Promise not fulfilled
+                            console.log(err);
+
+                        }, function (notify) {
+                            // Notify status of promise fulfillment
+                            console.log(notify);
+                        }
+                    );
+                };
                 // Function for logging user in
-                var loginUser = function(user_id, password){
+                var loginUser = function (user_id, password) {
                     dataService.loginUser(user_id, password).then(
                         // Promise is returned
                         function (response) {
                             // Promise is fulfilled
-                            if(response.data === 'Sign in successful'){
+                            if (response.data === 'Sign in successful') {
                                 // Login success
-                                $scope.buttonText = 'Sign Out';
                                 $scope.feedback = '';
-                                $scope.signedIn = true;
-                            } else{
+
+                            } else {
                                 // Login failed, feedback why to user
                                 $scope.feedback = response.data;
+                                $scope.signedIn = false;
                             }
                         }, function (err) {
                             // Promise not fulfilled
@@ -47,18 +74,18 @@
                 };
 
                 // Function for logging user out
-                var logoutUser = function(){
+                var logoutUser = function () {
                     dataService.logoutUser().then(
                         // Promise is returned
                         function (response) {
                             // Promise is fulfilled
-                            if(response.data === 'Sign out successful'){
+                            if (response.data === 'Sign out successful') {
                                 // Logout success
                                 $scope.buttonText = 'Sign In';
                                 $scope.feedback = '';
                                 $scope.signedIn = false;
 
-                            } else{
+                            } else {
                                 // Logout failed, feedback why to user
                                 $scope.feedback = response.data;
                             }
@@ -74,26 +101,23 @@
                     );
                 };
 
-                /* Scope method to decide which login method is used
+                /* Method to decide which login method is used
                  * If buttonText is 'Sign In' the user is not signed in
                  * therefore, use sign in function. Otherwise sign out
                  */
 
-                $scope.loginHandler = function($event, user_id, password){
+                $scope.loginHandler = function ($event, user_id, password) {
 
-                    if($scope.buttonText === 'Sign In'){
+                    if ($scope.signedIn === false) {
                         loginUser(user_id, password);
-
-                    } else{
+                    } else {
                         logoutUser();
                     }
-
                 };
             }
         ]
     ).controller('AlbumsController',
         [
-            // Dependencies
             '$scope',
             'dataService',
             'applicationData',
@@ -103,7 +127,6 @@
 
                 var getGenres = function () {
                     dataService.getGenres().then(
-
                         function (response) {
                             $scope.genres = response.data;
                         }, function (err) {
@@ -116,7 +139,6 @@
 
                 $scope.getAlbums = function (selectedGenre, searchCriteria) {
                     dataService.getAlbums(selectedGenre, searchCriteria).then(
-
                         function (response) {
                             $scope.albumCount = response.rowCount + ' Albums';
                             $scope.albums = response.data;
@@ -128,9 +150,12 @@
                     );
                 };
 
+                // Creating an empty object for error prevention
                 applicationData.publishInfo('album', {});
 
                 $scope.selectAlbum = function ($event, album) {
+                    /* Changing the URL path to be current + '/album/' + the album_id of the album clicked on
+                     * This will trigger a controller change (see app.js) */
                     $location.path('/album/' + album.Album_ID);
                     applicationData.publishInfo('album', album);
                 };
@@ -151,7 +176,6 @@
                 // Defining the getTracks function for use
                 var getTracks = function (Album_ID) {
                     dataService.getTracks(Album_ID).then(
-
                         function (response) {
                             $scope.tracks = response.data;
                         }, function (err) {
@@ -162,9 +186,13 @@
                     );
                 };
 
+                /*
+                 * Populating album info from URL because it will clear on refresh / link access
+                 * if it used object passed through click $event
+                */
+
                 var getAlbumInfo = function (Album_ID) {
                     dataService.getAlbumInfo(Album_ID).then(
-
                         function (response) {
                             $scope.chosenAlbum = response.data[0];
                         }, function (err) {
@@ -178,12 +206,92 @@
                 if ($routeParams && $routeParams.Album_ID) {
                     // Scroll to top of page (Because its a single page app the scroll does not reset to 0,0)
                     $window.scrollTo(0, 0);
+                    // Just to prove single page, all console logs will remain when changing between albums
                     console.log('Viewed album: ' + $routeParams.Album_ID);
                     // Using getTracks function and passing in the Album_ID retrieved from URL
                     getAlbumInfo($routeParams.Album_ID);
                     // Using getTracks function and passing in the Album_ID retrieved from URL
                     getTracks($routeParams.Album_ID);
                 }
+            }
+        ]
+    ).controller('NotesController',
+        [
+            '$scope',
+            '$routeParams',
+            'dataService',
+
+            function ($scope, $routeParams, dataService) {
+
+                var showNote = function(userID, album) {
+                    dataService.showNote(userID, album).then(
+                        function (response) {
+
+                            if(response.status !== 'error'){
+                                // If more than one row returned a  note exists
+                                if(response.data[0]){
+                                    // Note exists
+                                    $scope.albumNote = response.data[0].note;
+                                } else{
+                                    // No note on album
+                                    $scope.albumNote = 'No note';
+                                }
+                            } else{
+                                // Error with retrieving notes (not signed in or album_id not sent)
+                                $scope.albumNote = 'Not signed in';
+                            }
+                        }, function (err) {
+                            console.log(err);
+                        }, function (notify) {
+                            console.log(notify);
+                        }
+                    );
+                };
+
+                /*if(($routeParams && $routeParams.Album_ID) && applicationData.signedInStatus === true){
+                    showNote('1', $routeParams.Album_ID);
+                } else{
+                    $scope.albumNote = 'Not signed in';
+                }*/
+
+                $scope.newNote = function(userID, album){
+                    dataService.noteService('newNote', userID, album).then(
+                        function (response) {
+                            //
+
+                        }, function (err) {
+                            console.log(err);
+                        }, function (notify) {
+                            console.log(notify);
+                        }
+                    );
+                };
+
+                $scope.updateNote = function(userID, album){
+                    dataService.noteService('updateNote', userID, album).then(
+                        function (response) {
+                            //
+
+                        }, function (err) {
+                            console.log(err);
+                        }, function (notify) {
+                            console.log(notify);
+                        }
+                    );
+                };
+
+                $scope.deleteNote = function(userID, album){
+                    dataService.noteService('deleteNote', userID, album).then(
+                        function (response) {
+                            //
+
+                        }, function (err) {
+                            console.log(err);
+                        }, function (notify) {
+                            console.log(notify);
+                        }
+                    );
+                };
             }
         ]
     );
