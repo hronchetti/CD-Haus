@@ -19,7 +19,10 @@
             */
 
             function ($scope, dataService) {
-
+                // Making a method do communicate with child controllers the user's id
+                var broadcastDetails = function(){
+                    $scope.$broadcast('usersID', $scope.userID);
+                };
                 // Function gets user session data from $_SESSION so session persists in front-end when page is refreshed
                 var getSessionProperty = function(property){
                     dataService.sessionService(property).then(
@@ -75,6 +78,7 @@
                                 $scope.userID = user_id;
                                 $scope.signedIn = true;
                                 $scope.buttonText = 'Sign Out';
+                                broadcastDetails();
 
                             } else {
                                 // Login failed, feedback why to user
@@ -103,6 +107,7 @@
                                 $scope.signedIn = false;
                                 $scope.buttonText = 'Sign In';
                                 $scope.userID = '';
+                                broadcastDetails();
                             }
                         }, function (err) {
                             // Promise not fulfilled
@@ -116,8 +121,8 @@
                 };
 
                 /* Method to decide which login method is used
-                 * If buttonText is 'Sign In' the user is not signed in
-                 * therefore, use sign in function. Otherwise sign out
+                 * If signedIn variable is true user is signed in
+                 * therefore, use sign out function on click (vice versa)
                  */
 
                 $scope.loginHandler = function ($event, user_id, password) {
@@ -129,7 +134,7 @@
                         logoutUser();
                     }
                 };
-                
+
                 getSessionProperty('signedIn');
                 getSessionProperty('user_id');
             }
@@ -143,6 +148,7 @@
 
             function ($scope, dataService, applicationData, $location) {
 
+                // Doesn't need to be attached to $scope because will only execute once (to get genres)
                 var getGenres = function () {
                     dataService.getGenres().then(
                         function (response) {
@@ -155,6 +161,7 @@
                     );
                 };
 
+                // Method called when genre or search criteria changed, passes new filters in
                 $scope.getAlbums = function (selectedGenre, searchCriteria) {
                     dataService.getAlbums(selectedGenre, searchCriteria).then(
                         function (response) {
@@ -178,7 +185,7 @@
                     applicationData.publishInfo('album', album);
                 };
 
-                // Executing the function just created to it runs when the controller loads
+                // Executing the function just created so it runs when the controller loads
                 getGenres();
             }
         ]
@@ -191,7 +198,7 @@
 
             function ($scope, dataService, $routeParams, $window) {
 
-                // Defining the getTracks function for use
+                // Method to get the tracks of a given album
                 var getTracks = function (Album_ID) {
                     dataService.getTracks(Album_ID).then(
                         function (response) {
@@ -221,6 +228,7 @@
                     );
                 };
 
+                // If the route parameters contain a given Album ID then step into
                 if ($routeParams && $routeParams.Album_ID) {
                     // Scroll to top of page (Because its a single page app the scroll does not reset to 0,0)
                     $window.scrollTo(0, 0);
@@ -241,22 +249,23 @@
 
             function ($scope, $routeParams, dataService) {
 
-                $scope.showNote = function(action, userID, album) {
+                // Method for showing notes using notes service and
+                $scope.showNote = function (action, userID, album) {
                     dataService.noteService(action, userID, album).then(
                         function (response) {
 
-                            if(response.data.ResultSet){
-                                // If more than one row returned a  note exists
-                                if(response.data.ResultSet.Result[0].note){
+                            if (response.data.ResultSet) {
+                                // Results set returned only when record set class executed correctly
+                                if (response.data.ResultSet.Result[0].note) {
                                     // Note exists
                                     $scope.albumNote = response.data.ResultSet.Result[0].note;
                                     $scope.albumHasNotes = true;
-                                } else{
+                                } else {
                                     // No note on album
                                     $scope.albumNote = 'No note';
                                     $scope.albumHasNotes = false;
                                 }
-                            } else{
+                            } else {
                                 // Error with retrieving notes (not signed in or album_id not sent)
                                 $scope.albumNote = 'Not signed in or album not given';
                             }
@@ -268,22 +277,26 @@
                     );
                 };
 
-                $scope.newNote = function($event, note){
+                // Method to add a new note to the database using the provided text and sources userID and Album_ID from routeParams
+                $scope.newNote = function ($event, note) {
                     dataService.noteServiceWithText('newNote', $scope.userID, $routeParams.Album_ID, note).then(
                         function (response) {
                             //
-                            if(response.data.status === 'ok'){
+                            if (response.data.status === 'ok') {
+                                //
                                 $scope.albumHasNotes = true;
                                 $scope.noteFeedback = response.data.message.text;
                                 $scope.albumNote = note;
 
-                            } else if(response.data.message.text === 'Note already exists for this album') {
+                            } else if (response.data.message.text === 'Note already exists for this album') {
+                                // PHP error checking shows note already exists on this album so didn't run sql
                                 $scope.albumHasNotes = true;
                                 $scope.noteFeedback = response.data.message.text;
                                 $scope.albumNote = note;
 
                             } else {
-                                    $scope.noteFeedback = response.data.message.text;
+                                // status is likely to have been 'error' feedback why to client
+                                $scope.noteFeedback = response.data.message.text;
                             }
 
                         }, function (err) {
@@ -294,18 +307,20 @@
                     );
                 };
 
-                $scope.deleteNote = function($event){
+                // Method to delete a note from the database for a given album and username
+                $scope.deleteNote = function ($event) {
                     dataService.noteService('deleteNote', $scope.userID, $routeParams.Album_ID).then(
                         function (response) {
-                            //
-                            if(response.data.status === 'ok'){
+
+                            if (response.data.status === 'ok') {
+                                // sql executed correctly change client accordingly
                                 $scope.albumHasNotes = false;
                                 $scope.noteFeedback = response.data.message.text;
                                 $scope.albumNote = '';
-                            } else{
+                            } else {
+                                // status is likely to be 'error' feedback why to client
                                 $scope.noteFeedback = response.data.message.text;
                             }
-
                         }, function (err) {
                             console.log(err);
                         }, function (notify) {
@@ -314,17 +329,30 @@
                     );
                 };
 
-                /* userID is inherited because NotesController is child of IndexController
+                /* userID is inherited because NotesController is a child of IndexController
                  * if Album_ID is present in URL (routeParams) and userId is bigger than one (exists)
                  * run the showNote method to see if a note exists -> showNote() deals with updates to
                  * the view
                  */
 
-                if(($routeParams && $routeParams.Album_ID) && ($scope.signedIn && ($scope.userID && $scope.userID.length > 1))){
-                    $scope.showNote('showNote', $scope.userID, $routeParams.Album_ID);
-                } else{
-                    $scope.albumNote = 'Not signed in';
-                }
+                var showNoteHandler = function () {
+
+                    if (($routeParams && $routeParams.Album_ID) && ($scope.userID && $scope.userID.length > 1)) {
+                        $scope.showNote('showNote', $scope.userID, $routeParams.Album_ID);
+                    } else {
+                        // Should never been seen because ng-show will hide notes area if statement fails
+                        // but for clarity show not signed in
+                        $scope.albumNote = 'Not signed in';
+                    }
+                };
+                // Method for receiving the broadcasted information from IndexController (triggered when signed in /out)
+                $scope.$on('usersID', function () {
+                    // Broadcast received, this means the userID has changed
+                    // (either is now empty so hide notes or is now filled with signed in user so show notes)
+                    showNoteHandler();
+                });
+                // Executing the above method initially because on refresh of page broadcast will not be triggered but use could still be logged in
+                showNoteHandler();
             }
         ]
     );

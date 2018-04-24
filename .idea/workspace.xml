@@ -2,12 +2,9 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="d2a92c31-0909-42f1-b9ef-5e8b8c5ecb52" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/server/db/it_musicNew.sqlite" afterPath="$PROJECT_DIR$/server/db/it_musicNew.sqlite" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/index.html" afterPath="$PROJECT_DIR$/index.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/app.js" afterPath="$PROJECT_DIR$/js/app.js" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/resources/music_artwork/no-image.jpg" afterPath="" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/controllers.js" afterPath="$PROJECT_DIR$/js/controllers.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/partials/album-list.html" afterPath="$PROJECT_DIR$/js/partials/album-list.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/services.js" afterPath="$PROJECT_DIR$/js/services.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/partials/album-focus.html" afterPath="$PROJECT_DIR$/js/partials/album-focus.html" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/server/index.php" afterPath="$PROJECT_DIR$/server/index.php" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -33,7 +30,7 @@
       <file leaf-file-name="index.html" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/index.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="430">
+            <state relative-caret-position="465">
               <caret line="31" column="0" lean-forward="true" selection-start-line="31" selection-start-column="0" selection-end-line="31" selection-end-column="0" />
               <folding />
             </state>
@@ -53,18 +50,18 @@
       <file leaf-file-name="album-focus.html" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/js/partials/album-focus.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="239">
-              <caret line="44" column="64" lean-forward="true" selection-start-line="44" selection-start-column="64" selection-end-line="44" selection-end-column="64" />
+            <state relative-caret-position="194">
+              <caret line="41" column="16" lean-forward="true" selection-start-line="41" selection-start-column="16" selection-end-line="41" selection-end-column="16" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="controllers.js" pinned="false" current-in-tab="true">
+      <file leaf-file-name="controllers.js" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/js/controllers.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="249">
-              <caret line="131" column="16" lean-forward="false" selection-start-line="131" selection-start-column="16" selection-end-line="131" selection-end-column="16" />
+            <state relative-caret-position="391">
+              <caret line="350" column="64" lean-forward="false" selection-start-line="350" selection-start-column="64" selection-end-line="350" selection-end-column="64" />
               <folding />
             </state>
           </provider>
@@ -80,26 +77,25 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="index.php" pinned="false" current-in-tab="false">
+      <file leaf-file-name="index.php" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/server/index.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="486">
-              <caret line="185" column="51" lean-forward="true" selection-start-line="185" selection-start-column="51" selection-end-line="185" selection-end-column="51" />
+            <state relative-caret-position="89">
+              <caret line="161" column="65" lean-forward="false" selection-start-line="161" selection-start-column="65" selection-end-line="161" selection-end-column="65" />
               <folding>
-                <marker date="1524602907788" expanded="true" signature="3134:3263" ph="SELECT user_... i_user" />
-                <marker date="1524602907788" expanded="true" signature="3521:3659" ph="SELECT user_... i_user" />
-                <marker date="1524602907788" expanded="true" signature="7078:7769" ph="SELECT i_alb... " />
-                <marker date="1524602907788" expanded="true" signature="7792:8549" ph="SELECT i_alb... " />
-                <marker date="1524602907788" expanded="true" signature="9114:9854" ph="SELECT i_alb... i_artist" />
-                <marker date="1524602907788" expanded="true" signature="10323:10463" ph="SELECT * FRO... i_notes" />
-                <marker date="1524602907788" expanded="true" signature="11411:11561" ph="SELECT note i_notes" />
-                <marker date="1524602907788" expanded="true" signature="12039:12150" ph="INSERT INTO i_notes... " />
-                <marker date="1524602907788" expanded="true" signature="13194:13343" ph="UPDATE i_not... " />
-                <marker date="1524602907788" expanded="true" signature="14091:14241" ph="SELECT note i_notes" />
-                <marker date="1524602907788" expanded="true" signature="14509:14622" ph="DELETE FROM " />
-                <marker date="1524602907788" expanded="true" signature="15590:15632" ph="SELECT * FRO... i_genre" />
-                <marker date="1524602907788" expanded="true" signature="15590:15667" ph="SELECT * FRO... i_genre" />
-                <marker date="1524602907788" expanded="true" signature="16042:16789" ph="SELECT i_alb... " />
+                <marker date="1524613584060" expanded="true" signature="3134:3263" ph="SELECT user_... i_user" />
+                <marker date="1524613584060" expanded="true" signature="3521:3659" ph="SELECT user_... i_user" />
+                <marker date="1524613584060" expanded="true" signature="7136:7895" ph="SELECT i_alb... " />
+                <marker date="1524613584060" expanded="true" signature="8460:9200" ph="SELECT i_alb... i_artist" />
+                <marker date="1524613584060" expanded="true" signature="9669:9809" ph="SELECT * FRO... i_notes" />
+                <marker date="1524613584060" expanded="true" signature="10757:10907" ph="SELECT note i_notes" />
+                <marker date="1524613584060" expanded="true" signature="11385:11496" ph="INSERT INTO i_notes... " />
+                <marker date="1524613584060" expanded="true" signature="12540:12689" ph="UPDATE i_not... " />
+                <marker date="1524613584060" expanded="true" signature="13437:13587" ph="SELECT note i_notes" />
+                <marker date="1524613584060" expanded="true" signature="13855:13968" ph="DELETE FROM " />
+                <marker date="1524613584060" expanded="true" signature="14936:14978" ph="SELECT * FRO... i_genre" />
+                <marker date="1524613584060" expanded="true" signature="14936:15013" ph="SELECT * FRO... i_genre" />
+                <marker date="1524613584060" expanded="true" signature="15388:16135" ph="SELECT i_alb... " />
               </folding>
             </state>
           </provider>
@@ -179,13 +175,13 @@
         <option value="$PROJECT_DIR$/server/classes/session.class.php" />
         <option value="$PROJECT_DIR$/server/testing.php" />
         <option value="$PROJECT_DIR$/resources/style/styles.css" />
-        <option value="$PROJECT_DIR$/js/partials/album-focus.html" />
         <option value="$PROJECT_DIR$/js/app.js" />
         <option value="$PROJECT_DIR$/index.html" />
-        <option value="$PROJECT_DIR$/server/index.php" />
         <option value="$PROJECT_DIR$/js/partials/album-list.html" />
         <option value="$PROJECT_DIR$/js/services.js" />
         <option value="$PROJECT_DIR$/js/controllers.js" />
+        <option value="$PROJECT_DIR$/js/partials/album-focus.html" />
+        <option value="$PROJECT_DIR$/server/index.php" />
       </list>
     </option>
   </component>
@@ -242,12 +238,6 @@
               <item name="cm0665-assignment" type="b2602c69:ProjectViewProjectNode" />
               <item name="cm0665-assignment" type="2a2b976b:PhpTreeStructureProvider$1" />
               <item name="resources" type="2a2b976b:PhpTreeStructureProvider$1" />
-            </path>
-            <path>
-              <item name="cm0665-assignment" type="b2602c69:ProjectViewProjectNode" />
-              <item name="cm0665-assignment" type="2a2b976b:PhpTreeStructureProvider$1" />
-              <item name="resources" type="2a2b976b:PhpTreeStructureProvider$1" />
-              <item name="style" type="2a2b976b:PhpTreeStructureProvider$1" />
             </path>
             <path>
               <item name="cm0665-assignment" type="b2602c69:ProjectViewProjectNode" />
@@ -317,12 +307,12 @@
       <workItem from="1522937457658" duration="15000" />
       <workItem from="1523192831943" duration="17000" />
       <workItem from="1524151075575" duration="31886000" />
-      <workItem from="1524316660069" duration="77675000" />
+      <workItem from="1524316660069" duration="83532000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="272505000" />
+    <option name="totallyTimeSpent" value="278362000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="23" width="1280" height="777" extended-state="6" />
@@ -379,20 +369,19 @@
         <state relative-caret-position="0">
           <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
-            <marker date="1524602907788" expanded="true" signature="3134:3263" ph="SELECT user_... i_user" />
-            <marker date="1524602907788" expanded="true" signature="3521:3659" ph="SELECT user_... i_user" />
-            <marker date="1524602907788" expanded="true" signature="7078:7769" ph="SELECT i_alb... " />
-            <marker date="1524602907788" expanded="true" signature="7792:8549" ph="SELECT i_alb... " />
-            <marker date="1524602907788" expanded="true" signature="9114:9854" ph="SELECT i_alb... i_artist" />
-            <marker date="1524602907788" expanded="true" signature="10323:10463" ph="SELECT * FRO... i_notes" />
-            <marker date="1524602907788" expanded="true" signature="11411:11561" ph="SELECT note i_notes" />
-            <marker date="1524602907788" expanded="true" signature="12039:12150" ph="INSERT INTO i_notes... " />
-            <marker date="1524602907788" expanded="true" signature="13194:13343" ph="UPDATE i_not... " />
-            <marker date="1524602907788" expanded="true" signature="14091:14241" ph="SELECT note i_notes" />
-            <marker date="1524602907788" expanded="true" signature="14509:14622" ph="DELETE FROM " />
-            <marker date="1524602907788" expanded="true" signature="15590:15632" ph="SELECT * FRO... i_genre" />
-            <marker date="1524602907788" expanded="true" signature="15590:15667" ph="SELECT * FRO... i_genre" />
-            <marker date="1524602907788" expanded="true" signature="16042:16789" ph="SELECT i_alb... " />
+            <marker date="1524613584060" expanded="true" signature="3134:3263" ph="SELECT user_... i_user" />
+            <marker date="1524613584060" expanded="true" signature="3521:3659" ph="SELECT user_... i_user" />
+            <marker date="1524613584060" expanded="true" signature="7136:7895" ph="SELECT i_alb... " />
+            <marker date="1524613584060" expanded="true" signature="8460:9200" ph="SELECT i_alb... i_artist" />
+            <marker date="1524613584060" expanded="true" signature="9669:9809" ph="SELECT * FRO... i_notes" />
+            <marker date="1524613584060" expanded="true" signature="10757:10907" ph="SELECT note i_notes" />
+            <marker date="1524613584060" expanded="true" signature="11385:11496" ph="INSERT INTO i_notes... " />
+            <marker date="1524613584060" expanded="true" signature="12540:12689" ph="UPDATE i_not... " />
+            <marker date="1524613584060" expanded="true" signature="13437:13587" ph="SELECT note i_notes" />
+            <marker date="1524613584060" expanded="true" signature="13855:13968" ph="DELETE FROM " />
+            <marker date="1524613584060" expanded="true" signature="14936:14978" ph="SELECT * FRO... i_genre" />
+            <marker date="1524613584060" expanded="true" signature="14936:15013" ph="SELECT * FRO... i_genre" />
+            <marker date="1524613584060" expanded="true" signature="15388:16135" ph="SELECT i_alb... " />
           </folding>
         </state>
       </provider>
@@ -425,20 +414,19 @@
         <state relative-caret-position="0">
           <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
-            <marker date="1524602907788" expanded="true" signature="3134:3263" ph="SELECT user_... i_user" />
-            <marker date="1524602907788" expanded="true" signature="3521:3659" ph="SELECT user_... i_user" />
-            <marker date="1524602907788" expanded="true" signature="7078:7769" ph="SELECT i_alb... " />
-            <marker date="1524602907788" expanded="true" signature="7792:8549" ph="SELECT i_alb... " />
-            <marker date="1524602907788" expanded="true" signature="9114:9854" ph="SELECT i_alb... i_artist" />
-            <marker date="1524602907788" expanded="true" signature="10323:10463" ph="SELECT * FRO... i_notes" />
-            <marker date="1524602907788" expanded="true" signature="11411:11561" ph="SELECT note i_notes" />
-            <marker date="1524602907788" expanded="true" signature="12039:12150" ph="INSERT INTO i_notes... " />
-            <marker date="1524602907788" expanded="true" signature="13194:13343" ph="UPDATE i_not... " />
-            <marker date="1524602907788" expanded="true" signature="14091:14241" ph="SELECT note i_notes" />
-            <marker date="1524602907788" expanded="true" signature="14509:14622" ph="DELETE FROM " />
-            <marker date="1524602907788" expanded="true" signature="15590:15632" ph="SELECT * FRO... i_genre" />
-            <marker date="1524602907788" expanded="true" signature="15590:15667" ph="SELECT * FRO... i_genre" />
-            <marker date="1524602907788" expanded="true" signature="16042:16789" ph="SELECT i_alb... " />
+            <marker date="1524613584060" expanded="true" signature="3134:3263" ph="SELECT user_... i_user" />
+            <marker date="1524613584060" expanded="true" signature="3521:3659" ph="SELECT user_... i_user" />
+            <marker date="1524613584060" expanded="true" signature="7136:7895" ph="SELECT i_alb... " />
+            <marker date="1524613584060" expanded="true" signature="8460:9200" ph="SELECT i_alb... i_artist" />
+            <marker date="1524613584060" expanded="true" signature="9669:9809" ph="SELECT * FRO... i_notes" />
+            <marker date="1524613584060" expanded="true" signature="10757:10907" ph="SELECT note i_notes" />
+            <marker date="1524613584060" expanded="true" signature="11385:11496" ph="INSERT INTO i_notes... " />
+            <marker date="1524613584060" expanded="true" signature="12540:12689" ph="UPDATE i_not... " />
+            <marker date="1524613584060" expanded="true" signature="13437:13587" ph="SELECT note i_notes" />
+            <marker date="1524613584060" expanded="true" signature="13855:13968" ph="DELETE FROM " />
+            <marker date="1524613584060" expanded="true" signature="14936:14978" ph="SELECT * FRO... i_genre" />
+            <marker date="1524613584060" expanded="true" signature="14936:15013" ph="SELECT * FRO... i_genre" />
+            <marker date="1524613584060" expanded="true" signature="15388:16135" ph="SELECT i_alb... " />
           </folding>
         </state>
       </provider>
@@ -471,20 +459,19 @@
         <state relative-caret-position="0">
           <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
-            <marker date="1524602907788" expanded="true" signature="3134:3263" ph="SELECT user_... i_user" />
-            <marker date="1524602907788" expanded="true" signature="3521:3659" ph="SELECT user_... i_user" />
-            <marker date="1524602907788" expanded="true" signature="7078:7769" ph="SELECT i_alb... " />
-            <marker date="1524602907788" expanded="true" signature="7792:8549" ph="SELECT i_alb... " />
-            <marker date="1524602907788" expanded="true" signature="9114:9854" ph="SELECT i_alb... i_artist" />
-            <marker date="1524602907788" expanded="true" signature="10323:10463" ph="SELECT * FRO... i_notes" />
-            <marker date="1524602907788" expanded="true" signature="11411:11561" ph="SELECT note i_notes" />
-            <marker date="1524602907788" expanded="true" signature="12039:12150" ph="INSERT INTO i_notes... " />
-            <marker date="1524602907788" expanded="true" signature="13194:13343" ph="UPDATE i_not... " />
-            <marker date="1524602907788" expanded="true" signature="14091:14241" ph="SELECT note i_notes" />
-            <marker date="1524602907788" expanded="true" signature="14509:14622" ph="DELETE FROM " />
-            <marker date="1524602907788" expanded="true" signature="15590:15632" ph="SELECT * FRO... i_genre" />
-            <marker date="1524602907788" expanded="true" signature="15590:15667" ph="SELECT * FRO... i_genre" />
-            <marker date="1524602907788" expanded="true" signature="16042:16789" ph="SELECT i_alb... " />
+            <marker date="1524613584060" expanded="true" signature="3134:3263" ph="SELECT user_... i_user" />
+            <marker date="1524613584060" expanded="true" signature="3521:3659" ph="SELECT user_... i_user" />
+            <marker date="1524613584060" expanded="true" signature="7136:7895" ph="SELECT i_alb... " />
+            <marker date="1524613584060" expanded="true" signature="8460:9200" ph="SELECT i_alb... i_artist" />
+            <marker date="1524613584060" expanded="true" signature="9669:9809" ph="SELECT * FRO... i_notes" />
+            <marker date="1524613584060" expanded="true" signature="10757:10907" ph="SELECT note i_notes" />
+            <marker date="1524613584060" expanded="true" signature="11385:11496" ph="INSERT INTO i_notes... " />
+            <marker date="1524613584060" expanded="true" signature="12540:12689" ph="UPDATE i_not... " />
+            <marker date="1524613584060" expanded="true" signature="13437:13587" ph="SELECT note i_notes" />
+            <marker date="1524613584060" expanded="true" signature="13855:13968" ph="DELETE FROM " />
+            <marker date="1524613584060" expanded="true" signature="14936:14978" ph="SELECT * FRO... i_genre" />
+            <marker date="1524613584060" expanded="true" signature="14936:15013" ph="SELECT * FRO... i_genre" />
+            <marker date="1524613584060" expanded="true" signature="15388:16135" ph="SELECT i_alb... " />
           </folding>
         </state>
       </provider>
@@ -524,20 +511,19 @@
         <state relative-caret-position="0">
           <caret line="0" column="5" lean-forward="false" selection-start-line="0" selection-start-column="5" selection-end-line="0" selection-end-column="5" />
           <folding>
-            <marker date="1524602907788" expanded="true" signature="3134:3263" ph="SELECT user_... i_user" />
-            <marker date="1524602907788" expanded="true" signature="3521:3659" ph="SELECT user_... i_user" />
-            <marker date="1524602907788" expanded="true" signature="7078:7769" ph="SELECT i_alb... " />
-            <marker date="1524602907788" expanded="true" signature="7792:8549" ph="SELECT i_alb... " />
-            <marker date="1524602907788" expanded="true" signature="9114:9854" ph="SELECT i_alb... i_artist" />
-            <marker date="1524602907788" expanded="true" signature="10323:10463" ph="SELECT * FRO... i_notes" />
-            <marker date="1524602907788" expanded="true" signature="11411:11561" ph="SELECT note i_notes" />
-            <marker date="1524602907788" expanded="true" signature="12039:12150" ph="INSERT INTO i_notes... " />
-            <marker date="1524602907788" expanded="true" signature="13194:13343" ph="UPDATE i_not... " />
-            <marker date="1524602907788" expanded="true" signature="14091:14241" ph="SELECT note i_notes" />
-            <marker date="1524602907788" expanded="true" signature="14509:14622" ph="DELETE FROM " />
-            <marker date="1524602907788" expanded="true" signature="15590:15632" ph="SELECT * FRO... i_genre" />
-            <marker date="1524602907788" expanded="true" signature="15590:15667" ph="SELECT * FRO... i_genre" />
-            <marker date="1524602907788" expanded="true" signature="16042:16789" ph="SELECT i_alb... " />
+            <marker date="1524613584060" expanded="true" signature="3134:3263" ph="SELECT user_... i_user" />
+            <marker date="1524613584060" expanded="true" signature="3521:3659" ph="SELECT user_... i_user" />
+            <marker date="1524613584060" expanded="true" signature="7136:7895" ph="SELECT i_alb... " />
+            <marker date="1524613584060" expanded="true" signature="8460:9200" ph="SELECT i_alb... i_artist" />
+            <marker date="1524613584060" expanded="true" signature="9669:9809" ph="SELECT * FRO... i_notes" />
+            <marker date="1524613584060" expanded="true" signature="10757:10907" ph="SELECT note i_notes" />
+            <marker date="1524613584060" expanded="true" signature="11385:11496" ph="INSERT INTO i_notes... " />
+            <marker date="1524613584060" expanded="true" signature="12540:12689" ph="UPDATE i_not... " />
+            <marker date="1524613584060" expanded="true" signature="13437:13587" ph="SELECT note i_notes" />
+            <marker date="1524613584060" expanded="true" signature="13855:13968" ph="DELETE FROM " />
+            <marker date="1524613584060" expanded="true" signature="14936:14978" ph="SELECT * FRO... i_genre" />
+            <marker date="1524613584060" expanded="true" signature="14936:15013" ph="SELECT * FRO... i_genre" />
+            <marker date="1524613584060" expanded="true" signature="15388:16135" ph="SELECT i_alb... " />
           </folding>
         </state>
       </provider>
@@ -568,20 +554,19 @@
         <state relative-caret-position="0">
           <caret line="0" column="5" lean-forward="false" selection-start-line="0" selection-start-column="5" selection-end-line="0" selection-end-column="5" />
           <folding>
-            <marker date="1524602907788" expanded="true" signature="3134:3263" ph="SELECT user_... i_user" />
-            <marker date="1524602907788" expanded="true" signature="3521:3659" ph="SELECT user_... i_user" />
-            <marker date="1524602907788" expanded="true" signature="7078:7769" ph="SELECT i_alb... " />
-            <marker date="1524602907788" expanded="true" signature="7792:8549" ph="SELECT i_alb... " />
-            <marker date="1524602907788" expanded="true" signature="9114:9854" ph="SELECT i_alb... i_artist" />
-            <marker date="1524602907788" expanded="true" signature="10323:10463" ph="SELECT * FRO... i_notes" />
-            <marker date="1524602907788" expanded="true" signature="11411:11561" ph="SELECT note i_notes" />
-            <marker date="1524602907788" expanded="true" signature="12039:12150" ph="INSERT INTO i_notes... " />
-            <marker date="1524602907788" expanded="true" signature="13194:13343" ph="UPDATE i_not... " />
-            <marker date="1524602907788" expanded="true" signature="14091:14241" ph="SELECT note i_notes" />
-            <marker date="1524602907788" expanded="true" signature="14509:14622" ph="DELETE FROM " />
-            <marker date="1524602907788" expanded="true" signature="15590:15632" ph="SELECT * FRO... i_genre" />
-            <marker date="1524602907788" expanded="true" signature="15590:15667" ph="SELECT * FRO... i_genre" />
-            <marker date="1524602907788" expanded="true" signature="16042:16789" ph="SELECT i_alb... " />
+            <marker date="1524613584060" expanded="true" signature="3134:3263" ph="SELECT user_... i_user" />
+            <marker date="1524613584060" expanded="true" signature="3521:3659" ph="SELECT user_... i_user" />
+            <marker date="1524613584060" expanded="true" signature="7136:7895" ph="SELECT i_alb... " />
+            <marker date="1524613584060" expanded="true" signature="8460:9200" ph="SELECT i_alb... i_artist" />
+            <marker date="1524613584060" expanded="true" signature="9669:9809" ph="SELECT * FRO... i_notes" />
+            <marker date="1524613584060" expanded="true" signature="10757:10907" ph="SELECT note i_notes" />
+            <marker date="1524613584060" expanded="true" signature="11385:11496" ph="INSERT INTO i_notes... " />
+            <marker date="1524613584060" expanded="true" signature="12540:12689" ph="UPDATE i_not... " />
+            <marker date="1524613584060" expanded="true" signature="13437:13587" ph="SELECT note i_notes" />
+            <marker date="1524613584060" expanded="true" signature="13855:13968" ph="DELETE FROM " />
+            <marker date="1524613584060" expanded="true" signature="14936:14978" ph="SELECT * FRO... i_genre" />
+            <marker date="1524613584060" expanded="true" signature="14936:15013" ph="SELECT * FRO... i_genre" />
+            <marker date="1524613584060" expanded="true" signature="15388:16135" ph="SELECT i_alb... " />
           </folding>
         </state>
       </provider>
@@ -776,41 +761,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/index.html">
+    <entry file="file://$PROJECT_DIR$/js/services.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="430">
-          <caret line="31" column="0" lean-forward="true" selection-start-line="31" selection-start-column="0" selection-end-line="31" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/server/index.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="486">
-          <caret line="185" column="51" lean-forward="true" selection-start-line="185" selection-start-column="51" selection-end-line="185" selection-end-column="51" />
-          <folding>
-            <marker date="1524602907788" expanded="true" signature="3134:3263" ph="SELECT user_... i_user" />
-            <marker date="1524602907788" expanded="true" signature="3521:3659" ph="SELECT user_... i_user" />
-            <marker date="1524602907788" expanded="true" signature="7078:7769" ph="SELECT i_alb... " />
-            <marker date="1524602907788" expanded="true" signature="7792:8549" ph="SELECT i_alb... " />
-            <marker date="1524602907788" expanded="true" signature="9114:9854" ph="SELECT i_alb... i_artist" />
-            <marker date="1524602907788" expanded="true" signature="10323:10463" ph="SELECT * FRO... i_notes" />
-            <marker date="1524602907788" expanded="true" signature="11411:11561" ph="SELECT note i_notes" />
-            <marker date="1524602907788" expanded="true" signature="12039:12150" ph="INSERT INTO i_notes... " />
-            <marker date="1524602907788" expanded="true" signature="13194:13343" ph="UPDATE i_not... " />
-            <marker date="1524602907788" expanded="true" signature="14091:14241" ph="SELECT note i_notes" />
-            <marker date="1524602907788" expanded="true" signature="14509:14622" ph="DELETE FROM " />
-            <marker date="1524602907788" expanded="true" signature="15590:15632" ph="SELECT * FRO... i_genre" />
-            <marker date="1524602907788" expanded="true" signature="15590:15667" ph="SELECT * FRO... i_genre" />
-            <marker date="1524602907788" expanded="true" signature="16042:16789" ph="SELECT i_alb... " />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/js/partials/album-focus.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="239">
-          <caret line="44" column="64" lean-forward="true" selection-start-line="44" selection-start-column="64" selection-end-line="44" selection-end-column="64" />
+        <state relative-caret-position="316">
+          <caret line="264" column="91" lean-forward="false" selection-start-line="264" selection-start-column="91" selection-end-line="264" selection-end-column="91" />
           <folding />
         </state>
       </provider>
@@ -823,19 +777,49 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/js/services.js">
+    <entry file="file://$PROJECT_DIR$/index.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="316">
-          <caret line="264" column="91" lean-forward="false" selection-start-line="264" selection-start-column="91" selection-end-line="264" selection-end-column="91" />
+        <state relative-caret-position="465">
+          <caret line="31" column="0" lean-forward="true" selection-start-line="31" selection-start-column="0" selection-end-line="31" selection-end-column="0" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/js/controllers.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="249">
-          <caret line="131" column="16" lean-forward="false" selection-start-line="131" selection-start-column="16" selection-end-line="131" selection-end-column="16" />
+        <state relative-caret-position="391">
+          <caret line="350" column="64" lean-forward="false" selection-start-line="350" selection-start-column="64" selection-end-line="350" selection-end-column="64" />
           <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/partials/album-focus.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="194">
+          <caret line="41" column="16" lean-forward="true" selection-start-line="41" selection-start-column="16" selection-end-line="41" selection-end-column="16" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/server/index.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="89">
+          <caret line="161" column="65" lean-forward="false" selection-start-line="161" selection-start-column="65" selection-end-line="161" selection-end-column="65" />
+          <folding>
+            <marker date="1524613584060" expanded="true" signature="3134:3263" ph="SELECT user_... i_user" />
+            <marker date="1524613584060" expanded="true" signature="3521:3659" ph="SELECT user_... i_user" />
+            <marker date="1524613584060" expanded="true" signature="7136:7895" ph="SELECT i_alb... " />
+            <marker date="1524613584060" expanded="true" signature="8460:9200" ph="SELECT i_alb... i_artist" />
+            <marker date="1524613584060" expanded="true" signature="9669:9809" ph="SELECT * FRO... i_notes" />
+            <marker date="1524613584060" expanded="true" signature="10757:10907" ph="SELECT note i_notes" />
+            <marker date="1524613584060" expanded="true" signature="11385:11496" ph="INSERT INTO i_notes... " />
+            <marker date="1524613584060" expanded="true" signature="12540:12689" ph="UPDATE i_not... " />
+            <marker date="1524613584060" expanded="true" signature="13437:13587" ph="SELECT note i_notes" />
+            <marker date="1524613584060" expanded="true" signature="13855:13968" ph="DELETE FROM " />
+            <marker date="1524613584060" expanded="true" signature="14936:14978" ph="SELECT * FRO... i_genre" />
+            <marker date="1524613584060" expanded="true" signature="14936:15013" ph="SELECT * FRO... i_genre" />
+            <marker date="1524613584060" expanded="true" signature="15388:16135" ph="SELECT i_alb... " />
+          </folding>
         </state>
       </provider>
     </entry>

@@ -156,29 +156,20 @@ switch ($action) {
             $ordering = 'i_album.name ASC';
         }
 
-        /* UNION was used to bind 2 SQL statements together
-         * i_album must be the initial table selected from
-         * to get all rows (even with no genre)
-         * RIGHT JOIN not supported in SQLite therefore
-         * UNION was necessary
+        /* Selecting from the last album required an traveling from i_artist -> i_genre
+         * because RIGHT JOIN is not supported in Sqlite therefore cannot travel
+         * i_genre -> i_artist AND include all albums with missing genres...
+         * Seeing as every album has an artist this method works!
          */
 
-        $searchSLQ = "SELECT i_album.artwork AS Artwork, i_album.album_id AS Album_ID, i_album.name AS Album, GROUP_CONCAT(DISTINCT i_artist.name) AS Artists, i_album.genre_id AS Genre, i_album.year AS Year, TIME(SUM(i_track.total_time)/1000, 'unixepoch') AS Duration
-                      FROM i_album
-                          LEFT JOIN i_album_track ON (i_album.album_id = i_album_track.album_id)
-                          LEFT JOIN i_track ON (i_album_track.track_id = i_track.track_id)
-                          LEFT JOIN i_artist ON (i_track.artist_id = i_artist.artist_id)
-                      WHERE $filters AND genre_id IS NULL
+        $searchSLQ = "SELECT i_album.artwork AS Artwork, i_album.album_id AS Album_ID, i_album.name AS Album, GROUP_CONCAT(DISTINCT i_artist.name) AS Artists, i_genre.name AS Genre, i_album.year AS Year, TIME(SUM(i_track.total_time)/1000, 'unixepoch') AS Duration
+                      FROM i_artist
+                          INNER JOIN i_track ON (i_track.artist_id = i_artist.artist_id)
+                          INNER JOIN i_album_track ON (i_album_track.track_id = i_track.track_id)
+                          INNER JOIN i_album ON (i_album.album_id = i_album_track.album_id)
+                          LEFT JOIN i_genre ON (i_genre.genre_id = i_album.genre_id)
                       GROUP BY i_album.album_id
-                      UNION
-                      SELECT i_album.artwork AS Artwork, i_album.album_id AS Album_ID, i_album.name AS Album, GROUP_CONCAT(DISTINCT i_artist.name) AS Artists, i_genre.name AS Genre, i_album.year AS Year, TIME(SUM(i_track.total_time)/1000, 'unixepoch') AS Duration
-                      FROM i_genre
-                          INNER JOIN i_album ON (i_genre.genre_id = i_album.genre_id) 
-                          LEFT JOIN i_album_track ON (i_album.album_id = i_album_track.album_id)
-                          LEFT JOIN i_track ON (i_album_track.track_id = i_track.track_id)
-                          LEFT JOIN i_artist ON (i_track.artist_id = i_artist.artist_id)
-                      WHERE $filters
-                      GROUP BY i_album.album_id
+                      HAVING $filters
                       ORDER BY $ordering";
 
         // Creating a new instance of JSON_RecordSet class and applying SQL to the getRecordSet method
