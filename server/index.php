@@ -22,20 +22,25 @@ $userID = isset($_REQUEST['userID']) ? $_REQUEST['userID'] : null;
 $note = isset($_REQUEST['note']) ? $_REQUEST['note'] : null;
 $password = isset($_REQUEST['password']) ? $_REQUEST['password'] : null;
 $data = isset($_REQUEST['data']) ? $_REQUEST['data'] : null;
-// Search Variables
 $criteria = isset($_REQUEST['criteria']) ? $_REQUEST['criteria'] : null;
 $genre = isset($_REQUEST['genre']) ? $_REQUEST['genre'] : null;
 $ordering = isset($_REQUEST['ordering']) ? $_REQUEST['ordering'] : null;
 
 if (empty($action)) {
-    // Angular doesn't put post/put/delete method in the request stream so if the request method is post || put || delete then get
+
+    /* Angular doesn't put post/put/delete method in the request stream
+     * if the request method is post || put || delete then get php://input
+     * if any of the variables in php://input are named the same as the
+     * variables we need then fill the php variable with its value
+     */
+
     if ((($_SERVER['REQUEST_METHOD'] == 'POST') ||
             ($_SERVER['REQUEST_METHOD'] == 'PUT') ||
             ($_SERVER['REQUEST_METHOD'] == 'DELETE')) &&
         (strpos($_SERVER['CONTENT_TYPE'], 'application/json') !== false)) {
-        //
+        // input is what is returned from angular, which is neither of the request methods
         $input = json_decode(file_get_contents('php://input'), true);
-        // Putting the
+        // Putting the values of the php://input variables into the local php variables for use
         $action = isset($input['action']) ? $input['action'] : null;
         $album = isset($input['album']) ? $input['album'] : null;
         $userID = isset($input['userID']) ? $input['userID'] : null;
@@ -44,7 +49,6 @@ if (empty($action)) {
         $criteria = isset($input['criteria']) ? $input['criteria'] : null;
         $genre = isset($input['genre']) ? $input['genre'] : null;
         $ordering = isset($input['ordering']) ? $input['ordering'] : null;
-        // Returned from angular (POST)
         $data = isset($input['data']) ? $input['data'] : null;
     }
 }
@@ -101,7 +105,7 @@ switch ($action) {
 
     case 'logoutUser':
 
-
+        // Some error checking needed in here (if I have time)
         $session->clearSession();
 
         echo '{"status":"ok","message":{"text":"Sign out successful"}}';
@@ -228,22 +232,39 @@ switch ($action) {
         break;
 
     case 'newNote':
-        // note, album and userID retrieved at top of page in 'ESSENTIAL COMPONENTS'
+
         if (((!empty($note)) && (!empty($userID))) && (!empty($album))){
 
-            $newNoteSQL = "INSERT INTO i_notes (album_id, userID, note) 
-                           VALUES (:album_id, :user_id, :note)";
+            $noteCheck = $db->prepare("SELECT note
+                                       FROM i_notes
+                                       WHERE userID = :userID AND album_id = :album_id");
 
-            $rs = new JSON_RecordSet();
-            $retrieval = $rs->getRecordSet($newNoteSQL,
-                'ResultSet',
-                array(':album_id' => $album,
-                    ':user_id' => $userID,
-                    ':note' => $note));
+            $noteCheck->execute(array(':userID' => $userID,
+                                      ':album_id' => $album));
+            if($noteCheck->fetchObject()){
+                // Note already in the database for this album & user do not proceed
+                echo '{"status":"error", "message":{"text": "Note already exists for this album"}}';
 
-            echo '{"status":"ok", "message":{"text": "New note added"}}';
+            } else{
+                // No note in database so proceed with adding new note
+                $newNoteSQL = "INSERT INTO i_notes (album_id, userID, note) 
+                               VALUES (:album_id, :userID, :note)";
 
+                $rs = new JSON_RecordSet();
+                $retrieval = $rs->getRecordSet($newNoteSQL,
+                    'ResultSet',
+                    array(':album_id' => $album,
+                        ':userID' => $userID,
+                        ':note' => $note));
+
+                echo '{"status":"ok", "message":{"text": "New note added"}}';
+            }
+
+        } else if(((empty($note)) && (!empty($userID))) && (!empty($album))){
+            // Note was empty, no point in trying to add it to the database
+            echo '{"status":"error", "message":{"text": "New note not added. Note was empty"}}';
         } else {
+            // Either note, userID or album was empty no point trying to add note to database
             echo '{"status":"error", "message":{"text": "New note not added. Sign in required OR note text and album not provided"}}';
         }
 
@@ -251,7 +272,6 @@ switch ($action) {
 
     case 'updateNote':
 
-        // note, album and userID retrieved at top of page in 'ESSENTIAL COMPONENTS'
         if (((!empty($note)) && (!empty($userID))) && (!empty($album))){
 
             $updateNoteSQL = "UPDATE i_notes

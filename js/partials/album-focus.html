@@ -42,23 +42,23 @@
         </tbody>
     </table>
     <!-- NOTES SECTION -->
-    <section data-ng-controller="NotesController">
-        <h2 class="notes__title">Notes</h2>
-        <article class="notes">
+    <section data-ng-controller="NotesController" data-ng-show="signedIn === true">
+        <h2 class="notes__title">Note</h2>
+        <article class="notes" data-ng-show="albumHasNotes === true">
             <form>
                 <section class="notes__display">
                     <label class="hidden" for="notes-edit"></label>
                     <textarea name="note-edit" class="notes__edit" disabled rows="2" id="notes-edit">{{albumNote}}</textarea>
-                    <span class="icon-edit-note notes__icon"></span>
-                    <span class="icon-delete-note notes__icon"></span>
+                    <span class="icon-delete-note notes__icon" data-ng-click="deleteNote($event)"></span>
                     <input id="notes__button-update" class="button hidden" type="submit" name="update-note" value="update"/>
                 </section>
             </form>
         </article>
-        <form>
+        <form data-ng-show="albumHasNotes === false">
             <label class="hidden" for="notes-new"></label>
-            <textarea class="form__text-input notes__text-input" placeholder="New note..." name="note" id="notes-new"></textarea>
-            <input class="button notes__button" type="submit" name="new-note" value="Add note"/>
+            <textarea class="form__text-input notes__text-input" placeholder="New note..." name="note" id="notes-new" data-ng-model="newNoteText"></textarea>
+            <div class="sidebar__login-feedback">{{noteFeedback}}</div>
+            <input class="button notes__button" type="submit" name="new-note" value="Add note" data-ng-click="newNote($event, newNoteText)"/>
         </form>
     </section>
     <!-- END NOTES SECTION -->

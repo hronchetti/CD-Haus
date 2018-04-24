@@ -175,36 +175,10 @@
                     return defer.promise;
                 };
 
-                /*
-                 *
-                 * Service function for note functions,
-                 *
-                 */
-
-                this.showNote = function (userID, album){
-                    var defer = $q.defer(),
-                        data = {
-                            action: 'showNote',
-                            userID: userID,
-                            album: album
-                        };
-
-                    $http.get(urlBase, {params: data, cache: true}).// $http service promise abstraction
-                    success(function (response) {
-                        defer.resolve({
-                            data: response
-
-                        });
-                    }).error(function (err) {
-                        defer.reject(err);
-                    });
-
-                    return defer.promise;
-                };
 
                 /*
                  *
-                 * Service function for note functions,
+                 * Service function for note functions not requiring note message parameters
                  *
                  */
 
@@ -219,7 +193,7 @@
                     $http.get(urlBase, {params: data, cache: true}).// $http service promise abstraction
                     success(function (response) {
                         defer.resolve({
-                            data: response.ResultSet.Result
+                            data: response
                         });
                     }).error(function (err) {
                         defer.reject(err);
@@ -227,6 +201,39 @@
 
                     return defer.promise;
                 };
+
+                /*
+                 *
+                 * Service function for note functions requiring note message parameters
+                 *
+                 */
+
+                this.noteServiceWithText = function (action, userID, album, note){
+                    var defer = $q.defer(),
+                        data = {
+                            action: action,
+                            userID: userID,
+                            album: album,
+                            note: note
+                        };
+
+                    $http.get(urlBase, {params: data, cache: true}).// $http service promise abstraction
+                    success(function (response) {
+                        defer.resolve({
+                            data: response.message.text
+                        });
+                    }).error(function (err) {
+                        defer.reject(err);
+                    });
+
+                    return defer.promise;
+                };
+
+                /*
+                 *
+                 * Re-usable service function for retrieving information from PHP Session
+                 *
+                 */
 
                 this.sessionService = function (property){
                     var defer = $q.defer(),

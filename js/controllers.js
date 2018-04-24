@@ -25,18 +25,32 @@
                         // Promise is returned
                         function (response) {
                             // Promise is fulfilled
-                            if(response.signedIn === 1){
-                                // User signed in
-                                $scope.signedIn = true;
-                                $scope.buttonText = 'Sign Out';
-                                
-                            } else if(response.user_id > 1){
-                                $scope.userID = response.user_id
+                            if(property === 'signedIn'){
+                                // SignedIn variable is being checked
+                                if(response.data.signedIn === '1'){
+                                    // SignedIn Session variable is true (session variable = '1' when true)
+                                    $scope.signedIn = true;
+                                    $scope.buttonText = 'Sign Out';
 
+                                } else{
+                                    // SignedIn Session variable is not true
+                                    $scope.signedIn = false;
+                                    $scope.buttonText = 'Sign In';
+                                }
+                            } else if(property === 'user_id'){
+                                // User_id variable is being checked
+                                if(response.data.user_id.length > 1){
+                                    // User_id exists so change scope variable to its value
+                                    $scope.userID = response.data.user_id
+                                } else{
+                                    // User_id not in session
+                                    $scope.userID = '';
+                                }
                             } else{
-
+                                console.log('Session property does not exist');
+                                $scope.buttonText = 'Sign In';
+                                $scope.userID = '';
                             }
-
                         }, function (err) {
                             // Promise not fulfilled
                             console.log(err);
@@ -56,11 +70,13 @@
                             if (response.data === 'Sign in successful') {
                                 // Login success
                                 $scope.feedback = '';
+                                $scope.feedback = '';
+                                $scope.signedIn = true;
+                                $scope.buttonText = 'Sign Out';
 
                             } else {
                                 // Login failed, feedback why to user
                                 $scope.feedback = response.data;
-                                $scope.signedIn = false;
                             }
                         }, function (err) {
                             // Promise not fulfilled
@@ -81,15 +97,10 @@
                             // Promise is fulfilled
                             if (response.data === 'Sign out successful') {
                                 // Logout success
-                                $scope.buttonText = 'Sign In';
                                 $scope.feedback = '';
                                 $scope.signedIn = false;
-
-                            } else {
-                                // Logout failed, feedback why to user
-                                $scope.feedback = response.data;
+                                $scope.buttonText = 'Sign In';
                             }
-
                         }, function (err) {
                             // Promise not fulfilled
                             console.log(err);
@@ -110,10 +121,15 @@
 
                     if ($scope.signedIn === false) {
                         loginUser(user_id, password);
+
                     } else {
                         logoutUser();
                     }
                 };
+
+                //
+                getSessionProperty('signedIn');
+                getSessionProperty('user_id');
             }
         ]
     ).controller('AlbumsController',
@@ -223,22 +239,24 @@
 
             function ($scope, $routeParams, dataService) {
 
-                var showNote = function(userID, album) {
-                    dataService.showNote(userID, album).then(
+                var showNote = function(action, userID, album) {
+                    dataService.noteService(action, userID, album).then(
                         function (response) {
 
-                            if(response.status !== 'error'){
+                            if(response.data.ResultSet){
                                 // If more than one row returned a  note exists
-                                if(response.data[0]){
+                                if(response.data.ResultSet.Result[0].note){
                                     // Note exists
-                                    $scope.albumNote = response.data[0].note;
+                                    $scope.albumNote = response.data.ResultSet.Result[0].note;
+                                    $scope.albumHasNotes = true;
                                 } else{
                                     // No note on album
                                     $scope.albumNote = 'No note';
+                                    $scope.albumHasNotes = false;
                                 }
                             } else{
                                 // Error with retrieving notes (not signed in or album_id not sent)
-                                $scope.albumNote = 'Not signed in';
+                                $scope.albumNote = 'Not signed in or album not given';
                             }
                         }, function (err) {
                             console.log(err);
@@ -248,50 +266,56 @@
                     );
                 };
 
-                /*if(($routeParams && $routeParams.Album_ID) && applicationData.signedInStatus === true){
-                    showNote('1', $routeParams.Album_ID);
+                $scope.newNote = function($event, note){
+                    dataService.noteServiceWithText('newNote', $scope.userID, $routeParams.Album_ID, note).then(
+                        function (response) {
+                            //
+                            if(response.data === 'New note added'){
+                                $scope.albumHasNotes = true;
+                                $scope.noteFeedback = response.data
+
+                            } else{
+                                $scope.noteFeedback = response.data
+                            }
+
+                        }, function (err) {
+                            console.log(err);
+                        }, function (notify) {
+                            console.log(notify);
+                        }
+                    );
+                };
+
+                $scope.deleteNote = function($event){
+                    dataService.noteService('deleteNote', $scope.userID, $routeParams.Album_ID).then(
+                        function (response) {
+                            //
+                            if(response.data.status === 'ok'){
+                                $scope.albumHasNotes = false;
+                                $scope.noteFeedback = response.data.message.text
+                            } else{
+                                $scope.noteFeedback = response.data.message.text
+                            }
+
+                        }, function (err) {
+                            console.log(err);
+                        }, function (notify) {
+                            console.log(notify);
+                        }
+                    );
+                };
+
+                /* userID is inherited because NotesController is child of IndexController
+                 * if Album_ID is present in URL (routeParams) and userId is bigger than one (exists)
+                 * run the showNote method to see if a note exists -> showNote() deals with updates to
+                 * the view
+                 */
+
+                if(($routeParams && $routeParams.Album_ID) && ($scope.userID && $scope.userID.length > 1)){
+                    showNote('showNote', $scope.userID, $routeParams.Album_ID);
                 } else{
                     $scope.albumNote = 'Not signed in';
-                }*/
-
-                $scope.newNote = function(userID, album){
-                    dataService.noteService('newNote', userID, album).then(
-                        function (response) {
-                            //
-
-                        }, function (err) {
-                            console.log(err);
-                        }, function (notify) {
-                            console.log(notify);
-                        }
-                    );
-                };
-
-                $scope.updateNote = function(userID, album){
-                    dataService.noteService('updateNote', userID, album).then(
-                        function (response) {
-                            //
-
-                        }, function (err) {
-                            console.log(err);
-                        }, function (notify) {
-                            console.log(notify);
-                        }
-                    );
-                };
-
-                $scope.deleteNote = function(userID, album){
-                    dataService.noteService('deleteNote', userID, album).then(
-                        function (response) {
-                            //
-
-                        }, function (err) {
-                            console.log(err);
-                        }, function (notify) {
-                            console.log(notify);
-                        }
-                    );
-                };
+                }
             }
         ]
     );
