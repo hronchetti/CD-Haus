@@ -23,9 +23,8 @@
                 var urlBase = 'server/index.php';
 
                 /*
-                 *
-                 * Service function for signing in users
-                 *
+                 * Service function for signing in users,
+                 * uses $http built in service to send user input data to index.php with necessary action
                  */
 
                 this.loginUser = function (userID, password) {
@@ -38,11 +37,15 @@
                         };
 
                     $http.get(urlBase, {params: data, cache: true}).
+                    // $http service promise abstraction success/error instead of normal promise
                     success(function (response) {
                         defer.resolve({
+                            // Promise returned successfully
+                            // JSON object will be returned, add message text to data for access in controllers
                             data: response.message.text
                         });
                     }).error(function (err) {
+                        // Promise not returned
                         defer.reject(err);
                     });
 
@@ -51,7 +54,7 @@
 
                 /*
                  *
-                 * Service function for signing out users
+                 * Service function for signing out users, using necessary PHP action
                  *
                  */
 
@@ -75,7 +78,7 @@
 
                 /*
                  *
-                 * Service function for getting albums, re-used when genre || search || ordering changed
+                 * Service function for getting albums, re-used when genre or search changed
                  *
                  */
 
@@ -86,7 +89,6 @@
                             genre: genre,
                             criteria: criteria
                         };
-                    // $http service promise abstraction success/error instead of normal promise
                     $http.get(urlBase, {params: data, cache: true}).
                     success(function (response) {
                         defer.resolve({
@@ -102,7 +104,7 @@
 
                 /*
                  *
-                 * Service function for getting track from an album
+                 * Service function for getting tracks of an album using given album_id
                  *
                  */
 
@@ -112,8 +114,7 @@
                             action: 'showTracks',
                             album: Album_ID
                         };
-                    // $http service promise abstraction success/error instead of normal promise
-                    $http.get(urlBase, {params: data, cache: true}).// $http service promise abstraction
+                    $http.get(urlBase, {params: data, cache: true}).
                     success(function (response) {
                         defer.resolve({
                             data: response.ResultSet.Result
@@ -127,7 +128,7 @@
 
                 /*
                  *
-                 * Service function for getting genres to populate the genre option box
+                 * Service function for getting genres to populate the genre select options
                  *
                  */
 
@@ -137,7 +138,7 @@
                             action: 'showGenres'
                         };
 
-                    $http.get(urlBase, {params: data, cache: true}).// $http service promise abstraction
+                    $http.get(urlBase, {params: data, cache: true}).
                     success(function (response) {
                         defer.resolve({
                             data: response.ResultSet.Result,
@@ -179,6 +180,7 @@
                 /*
                  *
                  * Service function for note functions not requiring note message parameters
+                 * re-used by sending action with SQL data to determine which PHP case to use
                  *
                  */
 
@@ -220,7 +222,7 @@
                     $http.get(urlBase, {params: data, cache: true}).// $http service promise abstraction
                     success(function (response) {
                         defer.resolve({
-                            data: response.message.text
+                            data: response
                         });
                     }).error(function (err) {
                         defer.reject(err);
@@ -232,6 +234,7 @@
                 /*
                  *
                  * Re-usable service function for retrieving information from PHP Session
+                 * gets value of a given property by name
                  *
                  */
 
@@ -256,6 +259,13 @@
             }
         ]
     ).service('applicationData',
+
+        /*
+         *
+         * Service function for broadcasting changes in $scope from highest level to lowest
+         *
+         */
+
         // Access $scope from highest level (root)
         function ($rootScope) {
             // sharedService is an object because without being so changes will not be received in child all controllers

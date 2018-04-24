@@ -15,7 +15,7 @@ header("Content-Type: application/json");
 /*  ---------------------------------------------
  *  ESSENTIAL COMPONENTS
  *  ------------------------------------------ */
-
+// Getting all the potential variables from the request stream
 $action = isset($_REQUEST['action']) ? $_REQUEST['action'] : null;
 $album = isset($_REQUEST['album']) ? $_REQUEST['album'] : null;
 $userID = isset($_REQUEST['userID']) ? $_REQUEST['userID'] : null;
@@ -26,6 +26,7 @@ $criteria = isset($_REQUEST['criteria']) ? $_REQUEST['criteria'] : null;
 $genre = isset($_REQUEST['genre']) ? $_REQUEST['genre'] : null;
 $ordering = isset($_REQUEST['ordering']) ? $_REQUEST['ordering'] : null;
 
+// If action variable not in request stream but index.php still referenced there may still be some data sent by angular
 if (empty($action)) {
 
     /* Angular doesn't put post/put/delete method in the request stream
@@ -59,8 +60,9 @@ if (empty($action)) {
 
 switch ($action) {
     case 'loginUser':
-        // password and userID retrieved at top of page in 'ESSENTIAL COMPONENTS'
+
         if (!empty($userID) && !empty($password)) {
+            // Both userID and password were provided
 
             // Check if user exists in the database
             $userCheck = $db->prepare("SELECT user_id
@@ -68,7 +70,7 @@ switch ($action) {
                                        WHERE user_id = :user_id");
             $userCheck->execute(array(':user_id' => $userID));
 
-            // If fetchObject returns a row it means the user_id entered exists in the database (step into if)
+            // If fetchObject returns a row it means the user_id entered exists in the database (step into)
             if($userCheck->fetchObject()){
 
                 $stmt = $db->prepare("SELECT user_id, password
@@ -105,7 +107,7 @@ switch ($action) {
 
     case 'logoutUser':
 
-        // Some error checking needed in here (if I have time)
+        // Empty the session using the session class
         $session->clearSession();
 
         echo '{"status":"ok","message":{"text":"Sign out successful"}}';
@@ -116,7 +118,7 @@ switch ($action) {
 
         if(!empty($data)){
 
-            // echo the session property and its value returned
+            // Echo the session property and its value returned, accessed by method in session class
             echo '{"status":"ok","message":{"'. $data . '":"' . $session->getProperty($data) .'"}}';
 
         } else{
@@ -156,8 +158,9 @@ switch ($action) {
 
         /* UNION was used to bind 2 SQL statements together
          * i_album must be the initial table selected from
-         * to get all rows because RIGHT JOIN is not supported
-         * in SQLite
+         * to get all rows (even with no genre)
+         * RIGHT JOIN not supported in SQLite therefore
+         * UNION was necessary
          */
 
         $searchSLQ = "SELECT i_album.artwork AS Artwork, i_album.album_id AS Album_ID, i_album.name AS Album, GROUP_CONCAT(DISTINCT i_artist.name) AS Artists, i_album.genre_id AS Genre, i_album.year AS Year, TIME(SUM(i_track.total_time)/1000, 'unixepoch') AS Duration
@@ -167,7 +170,7 @@ switch ($action) {
                           LEFT JOIN i_artist ON (i_track.artist_id = i_artist.artist_id)
                       WHERE $filters AND genre_id IS NULL
                       GROUP BY i_album.album_id
-                      UNION ALL
+                      UNION
                       SELECT i_album.artwork AS Artwork, i_album.album_id AS Album_ID, i_album.name AS Album, GROUP_CONCAT(DISTINCT i_artist.name) AS Artists, i_genre.name AS Genre, i_album.year AS Year, TIME(SUM(i_track.total_time)/1000, 'unixepoch') AS Duration
                       FROM i_genre
                           INNER JOIN i_album ON (i_genre.genre_id = i_album.genre_id) 
@@ -178,8 +181,10 @@ switch ($action) {
                       GROUP BY i_album.album_id
                       ORDER BY $ordering";
 
+        // Creating a new instance of JSON_RecordSet class and applying SQL to the getRecordSet method
         $rs = new JSON_RecordSet();
         $retrieval = $rs->getRecordSet($searchSLQ);
+        // Echoing the JSON returned from the getRecordSet method, which, used the SQL provided
         echo $retrieval;
 
         break;
@@ -211,6 +216,7 @@ switch ($action) {
 
         if((!empty($userID)) && (!empty($album))){
 
+            // Both userID and album provided so run SQL to see if notes exist
             $showNoteSQL = "SELECT *
                             FROM i_notes
                             WHERE i_notes.album_id = $album AND i_notes.userID = '$userID'";
@@ -220,12 +226,15 @@ switch ($action) {
             echo $retrieval;
 
         } else if((empty($userID)) && (!empty($album))){
+            // UserID not provided, likely user is not signed in
             echo '{"status":"error", "message":{"text": "Sign in to show notes"}}';
 
         } else if((!empty($userID)) && (empty($album))){
+            // Album id not provided, notify user
             echo '{"status":"error", "message":{"text": "No album chosen"}}';
 
         } else {
+            // Both userID and album were empty
             echo '{"status":"error", "message":{"text": "Sign in to show notes"}}';
         }
 
@@ -235,18 +244,19 @@ switch ($action) {
 
         if (((!empty($note)) && (!empty($userID))) && (!empty($album))){
 
+            // All necessary data provided but first check if note already exists before trying to add a new one
             $noteCheck = $db->prepare("SELECT note
                                        FROM i_notes
                                        WHERE userID = :userID AND album_id = :album_id");
-
             $noteCheck->execute(array(':userID' => $userID,
                                       ':album_id' => $album));
+
             if($noteCheck->fetchObject()){
                 // Note already in the database for this album & user do not proceed
                 echo '{"status":"error", "message":{"text": "Note already exists for this album"}}';
 
             } else{
-                // No note in database so proceed with adding new note
+                // No note in database, proceed with adding new note
                 $newNoteSQL = "INSERT INTO i_notes (album_id, userID, note) 
                                VALUES (:album_id, :userID, :note)";
 
@@ -257,12 +267,12 @@ switch ($action) {
                         ':userID' => $userID,
                         ':note' => $note));
 
-                echo $retrieval; //'{"status":"ok", "message":{"text": "New note added"}}';
+                echo '{"status":"ok", "message":{"text": "New note added: '. $note .'"}}';
             }
 
         } else if(((empty($note)) && (!empty($userID))) && (!empty($album))){
             // Note was empty, no point in trying to add it to the database
-            echo '{"status":"error", "message":{"text": "New note field required, not not added"}}';
+            echo '{"status":"error", "message":{"text": "New note field required, note not added"}}';
         } else {
             // Either note, userID or album was empty no point trying to add note to database
             echo '{"status":"error", "message":{"text": "New note not added. Sign in required OR note text and album not provided"}}';
@@ -282,8 +292,8 @@ switch ($action) {
             $retrieval = $rs->getRecordSet($updateNoteSQL,
                 'ResultSet',
                 array(':note' => $note,
-                    ':album_id' => $album,
-                    ':userID' => $userID));
+                     ':album_id' => $album,
+                     ':userID' => $userID));
 
             echo '{"status":"ok", "message":{"text": "Note updated"}}';
 
@@ -296,39 +306,50 @@ switch ($action) {
     case 'deleteNote':
 
         if ((!empty($album)) && (!empty($userID))){
-            // SQL to delete record from database entirely
-            $deleteNoteSQL = "DELETE FROM i_notes
-                              WHERE i_notes.album_id=:album_id AND i_notes.userID=:userID";
-            //
-            $rs = new JSON_RecordSet();
-            $retrieval = $rs->getRecordSet($deleteNoteSQL,
+
+            // All necessary data provided, but first check note actually exists in database before trying to delete it
+            $noteCheck = $db->prepare("SELECT note
+                                       FROM i_notes
+                                       WHERE userID = :userID AND album_id = :album_id");
+            $noteCheck->execute(array(':userID' => $userID,
+                                      ':album_id' => $album));
+
+            if($noteCheck->fetchObject()){
+                // Note does exist, proceed with deleting note
+                $deleteNoteSQL = "DELETE FROM i_notes
+                                  WHERE i_notes.album_id=:album_id AND i_notes.userID=:userID";
+                $rs = new JSON_RecordSet();
+                $retrieval = $rs->getRecordSet($deleteNoteSQL,
                 'ResultSet',
                 array(':album_id' => $album,
-                    ':userID' => $userID));
+                      ':userID' => $userID));
 
-            echo '{"status":"ok", "message":{"text": "Note deleted"}}';
-
+                echo '{"status":"ok", "message":{"text": "Note deleted"}}';
+            } else{
+                // Note did not exist for the album and userID provided, don't try and delete because nothing to delete
+                echo '{"status":"error", "message":{"text": "Note cannot be deleted, note does not exist"}}';
+            }
         } else {
+            // Note or userID not provided, no point trying to delete from database
             echo '{"status":"error", "message":{"text": "Note not deleted. Sign in required OR album not provided"}}';
         }
 
         break;
 
     case 'showGenres':
-        // case to make all the genres accessible so filtering is dynamically populated from the database
+        // Case to make all the genres accessible so filtering is dynamically populated from the database
         $genreSQL = "SELECT *
                      FROM i_genre
                      ORDER BY name";
 
         $rs = new JSON_RecordSet();
-        //
         $retrieval = $rs->getRecordSet($genreSQL);
-        // Printing the results on the page
         echo $retrieval;
 
         break;
     case 'showAlbumInfo':
 
+        // Get the information for a given album, necessary because angular page changes controller and 'search' case does not retrieve the right information
         if(!empty($album)) {
             $albumInfoSQL = "SELECT i_album.artwork AS Artwork, i_album.album_id AS Album_ID, i_album.name AS Album, i_artist.name AS Artists, i_genre.name AS Genre, i_album.year AS Year, TIME(SUM(i_track.total_time)/1000, 'unixepoch') AS Duration
                           FROM i_genre
@@ -340,16 +361,16 @@ switch ($action) {
                           GROUP BY i_album.album_id";
 
             $rs = new JSON_RecordSet();
-            //
             $retrieval = $rs->getRecordSet($albumInfoSQL);
-            // Printing the results on the page
             echo $retrieval;
+
         } else{
             echo '{"status":"error", "message":{"text": "No album chosen"}}';
         }
-        break;
 
+        break;
     default:
+        // $action provided did not match any cases
         echo '{"status":"error", "message":{"text": "(default) no action taken"}}';
         break;
 }

@@ -129,8 +129,7 @@
                         logoutUser();
                     }
                 };
-
-                //
+                
                 getSessionProperty('signedIn');
                 getSessionProperty('user_id');
             }
@@ -242,7 +241,7 @@
 
             function ($scope, $routeParams, dataService) {
 
-                var showNote = function(action, userID, album) {
+                $scope.showNote = function(action, userID, album) {
                     dataService.noteService(action, userID, album).then(
                         function (response) {
 
@@ -273,13 +272,18 @@
                     dataService.noteServiceWithText('newNote', $scope.userID, $routeParams.Album_ID, note).then(
                         function (response) {
                             //
-                            if(response.data === 'New note added'){
+                            if(response.data.status === 'ok'){
                                 $scope.albumHasNotes = true;
-                                $scope.noteFeedback = response.data;
+                                $scope.noteFeedback = response.data.message.text;
                                 $scope.albumNote = note;
 
-                            } else{
-                                $scope.noteFeedback = response.data;
+                            } else if(response.data.message.text === 'Note already exists for this album') {
+                                $scope.albumHasNotes = true;
+                                $scope.noteFeedback = response.data.message.text;
+                                $scope.albumNote = note;
+
+                            } else {
+                                    $scope.noteFeedback = response.data.message.text;
                             }
 
                         }, function (err) {
@@ -316,8 +320,8 @@
                  * the view
                  */
 
-                if(($routeParams && $routeParams.Album_ID) && ($scope.signedIn && $scope.userID.length > 1)){
-                    showNote('showNote', $scope.userID, $routeParams.Album_ID);
+                if(($routeParams && $routeParams.Album_ID) && ($scope.signedIn && ($scope.userID && $scope.userID.length > 1))){
+                    $scope.showNote('showNote', $scope.userID, $routeParams.Album_ID);
                 } else{
                     $scope.albumNote = 'Not signed in';
                 }

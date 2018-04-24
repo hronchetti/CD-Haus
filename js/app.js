@@ -1,5 +1,5 @@
 /**
- * Angular Application master
+ * Angular Application master, just for config settings
  */
 (function () {
 
@@ -16,7 +16,12 @@
 
             function ($routeProvider) {
 
-                //
+                /* When the URL includes /album/ and given Album_ID change controller to
+                 * TrackController so user sees the tracks for the given album
+                 * Otherwise (no matter what URL is given) redirect back to root URL
+                 * and use AlbumsController
+                 */
+
                 $routeProvider
                     .when('/album/:Album_ID', {
                         controller: 'TracksController',
