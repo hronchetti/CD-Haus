@@ -257,12 +257,12 @@ switch ($action) {
                         ':userID' => $userID,
                         ':note' => $note));
 
-                echo '{"status":"ok", "message":{"text": "New note added"}}';
+                echo $retrieval; //'{"status":"ok", "message":{"text": "New note added"}}';
             }
 
         } else if(((empty($note)) && (!empty($userID))) && (!empty($album))){
             // Note was empty, no point in trying to add it to the database
-            echo '{"status":"error", "message":{"text": "New note not added. Note was empty"}}';
+            echo '{"status":"error", "message":{"text": "New note field required, not not added"}}';
         } else {
             // Either note, userID or album was empty no point trying to add note to database
             echo '{"status":"error", "message":{"text": "New note not added. Sign in required OR note text and album not provided"}}';

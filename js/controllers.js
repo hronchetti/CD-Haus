@@ -20,6 +20,7 @@
 
             function ($scope, dataService) {
 
+                // Function gets user session data from $_SESSION so session persists in front-end when page is refreshed
                 var getSessionProperty = function(property){
                     dataService.sessionService(property).then(
                         // Promise is returned
@@ -61,6 +62,7 @@
                         }
                     );
                 };
+
                 // Function for logging user in
                 var loginUser = function (user_id, password) {
                     dataService.loginUser(user_id, password).then(
@@ -70,7 +72,7 @@
                             if (response.data === 'Sign in successful') {
                                 // Login success
                                 $scope.feedback = '';
-                                $scope.feedback = '';
+                                $scope.userID = user_id;
                                 $scope.signedIn = true;
                                 $scope.buttonText = 'Sign Out';
 
@@ -100,6 +102,7 @@
                                 $scope.feedback = '';
                                 $scope.signedIn = false;
                                 $scope.buttonText = 'Sign In';
+                                $scope.userID = '';
                             }
                         }, function (err) {
                             // Promise not fulfilled
@@ -272,10 +275,11 @@
                             //
                             if(response.data === 'New note added'){
                                 $scope.albumHasNotes = true;
-                                $scope.noteFeedback = response.data
+                                $scope.noteFeedback = response.data;
+                                $scope.albumNote = note;
 
                             } else{
-                                $scope.noteFeedback = response.data
+                                $scope.noteFeedback = response.data;
                             }
 
                         }, function (err) {
@@ -292,9 +296,10 @@
                             //
                             if(response.data.status === 'ok'){
                                 $scope.albumHasNotes = false;
-                                $scope.noteFeedback = response.data.message.text
+                                $scope.noteFeedback = response.data.message.text;
+                                $scope.albumNote = '';
                             } else{
-                                $scope.noteFeedback = response.data.message.text
+                                $scope.noteFeedback = response.data.message.text;
                             }
 
                         }, function (err) {
@@ -311,7 +316,7 @@
                  * the view
                  */
 
-                if(($routeParams && $routeParams.Album_ID) && ($scope.userID && $scope.userID.length > 1)){
+                if(($routeParams && $routeParams.Album_ID) && ($scope.signedIn && $scope.userID.length > 1)){
                     showNote('showNote', $scope.userID, $routeParams.Album_ID);
                 } else{
                     $scope.albumNote = 'Not signed in';

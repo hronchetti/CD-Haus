@@ -42,7 +42,7 @@
         </tbody>
     </table>
     <!-- NOTES SECTION -->
-    <section data-ng-controller="NotesController" data-ng-show="signedIn === true">
+    <section data-ng-controller="NotesController" data-ng-show="userID.length > 1 && signedIn === true">
         <h2 class="notes__title">Note</h2>
         <article class="notes" data-ng-show="albumHasNotes === true">
             <form>
