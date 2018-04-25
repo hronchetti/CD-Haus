@@ -23,7 +23,7 @@ $page->addToBody( "\t<h1>CD Haus Testing Page</h1>\n
  *  USER FORMS
  *  ------------------------------------------ */
 
-$loggedInStatus = $session->getProperty('loggedIn');
+$loggedInStatus = $session->getProperty('signedIn');
 $sessionUserID = $session->getProperty('user_id');
 
 /* If user is logged in change the form button to sign out, form action to logout and show user_id

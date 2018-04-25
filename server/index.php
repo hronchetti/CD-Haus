@@ -286,7 +286,7 @@ switch ($action) {
                      ':album_id' => $album,
                      ':userID' => $userID));
 
-            echo '{"status":"ok", "message":{"text": "Note updated"}}';
+            echo '{"status":"ok", "message":{"text": "Note updated. New note: '. $note .'"}}';
 
         } else {
             echo '{"status":"error", "message":{"text": "Note not updated. Sign in required OR note text and album not provided"}}';
